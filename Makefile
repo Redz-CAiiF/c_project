@@ -6,7 +6,11 @@ main_iplib.o: main_iplib.c bmp.h
 
 ip_lib.o: ip_lib.c ip_lib.h bmp.h
 	gcc ip_lib.c -o ip_lib.o -Wall --ansi --pedantic -c -ggdb
-
+	
+tfun: ip_lib.o bmp.o main_test.c
+	gcc main_test.c -o main_test.o -Wall -lm -c
+	gcc main_test.o ip_lib.o bmp.o -o tfun -Wall --ansi --pedantic -ggdb -lm
+	
 test_main: test.o bmp.o
 	gcc test.o bmp.o -o test -Wall -lm
 	
