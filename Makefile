@@ -1,7 +1,7 @@
 all: main_iplib.o iplib.o bmp.o
 	gcc main_iplib.o iplib.o bmp.o -o main -Wall --ansi --pedantic -ggdb -lm
 
-main_iplib.o: main_iplib.c bmp.h
+main_iplib.o: main_iplib.o bmp.h
 	gcc main_iplib.c -o main_iplib.o -Wall --ansi --pedantic -c -ggdb
 
 iplib.o: iplib.c iplib.h bmp.h
