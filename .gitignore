@@ -1,0 +1,4 @@
+*.log
+*.o
+main
+test
