@@ -1,9 +1,9 @@
 /*
- Created by Sebastiano Vascon on 23/03/20.
+ Created by !Sebastiano Vascon on 23/03/20.
 */
 
 #include <stdio.h>
-#include <math.h>
+#include <math.h> 
 #include <string.h> /*only memcpy*/
 #include <limits.h>
 #include "ip_lib.h"
@@ -122,14 +122,14 @@ float get_normal_random(){
 
 /** PUNTO 1  **/
 
-ip_mat * ip_mat_create(unsigned int h, unsigned int w,unsigned  int k, float v){   /*CREO LA MATRICE*/
-    int i,j,z;                          /*indici di scorrimento canali, colonne, righe*/
-	ip_mat *pic;                        /*nuova matrice*/
+ip_mat * ip_mat_create(unsigned int h, unsigned int w,unsigned  int k, float v){
+    int i,j,z;
+	ip_mat *pic; /*indici di scorrimento canali, colonne, righe*/ 
     pic = (ip_mat *) malloc(sizeof(struct ip_mat)); /*creo la nuova matrice*/
     
-    pic->w = w;                         /*canali*/
-    pic->h = h;                         /*colonne*/
-    pic->k = k;                         /*righe*/
+    pic->w = w;/*righe*/
+    pic->h = h;/*colonne*/ 
+    pic->k = k;/*canali*/ 
     /*inizializzo stats*/
     pic->stat = (stats *) malloc(sizeof(struct stats)*k);/*array di stats di linghezza k*/
     
@@ -151,14 +151,14 @@ ip_mat * ip_mat_create(unsigned int h, unsigned int w,unsigned  int k, float v){
     return pic;
 }
 
-void ip_mat_free(ip_mat *a){        /* LIBERO LO SPAZIO IN MEMORIA*/
+void ip_mat_free(ip_mat *a){
     int i,j;
     
     /* free stats */
-    free(a->stat);                  /* libera la stats*/
+    free(a->stat);
     
     /* free data */
-    for(i=0;i<a->k;i++){            /* libera data*/
+    for(i=0;i<a->k;i++){
         for(j=0;j<a->h;j++){
             free(a->data[i][j]);
         }
@@ -170,36 +170,36 @@ void ip_mat_free(ip_mat *a){        /* LIBERO LO SPAZIO IN MEMORIA*/
     
 }
 
-ip_mat * ip_mat_copy(ip_mat * in){      /* COPIO UNA MATRICE IN ALTRA MATRICE*/
-    int i,j,z;                          /* scorro canali, colonne, righe*/
-	ip_mat *out;                        /* matrice out*/
-    out = ip_mat_create(in->h,in->w,in->k,0);   /*creo la nuova matrice con la funzione create*/
+ip_mat * ip_mat_copy(ip_mat * in){
+    int i,j,z;
+	ip_mat *out;
+    out = ip_mat_create(in->h,in->w,in->k,0);
     
-    out->w = in->w;     /*canali*/
-    out->h = in->h;     /*colonne*/
-    out->k = in->k;     /*righe*/
+    out->w = in->w;
+    out->h = in->h;
+    out->k = in->k;
     
     /*copio stats*/
     for(i=0;i<out->k;i++){
         /*copio tutte le celle di stats*/
-        out->stat[i] = in->stat[i];             /* copio tutte le celle di stats*/
+        out->stat[i] = in->stat[i];
     }
     
     /*copio data*/
     for(i=0;i<out->k;i++)
         for(j=0;j<out->h;j++)
             for(z=0;z<out->w;z++)
-                set_val(out,j,z,i,get_val(in,j,z,i));   /* copio data */ 
+                set_val(out,j,z,i,get_val(in,j,z,i));
     
     return out;
 }
 
 /* devo sapere se row_end e col_end sono inclusi oppure no
- * CREO SOTTOMATRICE DI UNA MATRICE */
+ * */
 ip_mat * ip_mat_subset(ip_mat * t, unsigned int row_start, unsigned int row_end, unsigned int col_start, unsigned int col_end){
-    int i,j,z;              /* indice di scorrimento canali, colonne, righe*/
-    ip_mat *out;            /* sottomatrcie in uscita*/ 
-    out = ip_mat_create(col_end-col_start,row_end-row_start,t->k,0);    /*creo la sottomatrice con la funzione create*/
+    int i,j,z;
+    ip_mat *out;
+    out = ip_mat_create(col_end-col_start,row_end-row_start,t->k,0);
     
     for(i=0;i<t->k;i++){
         for(j=col_start;j<col_end;j++){
@@ -212,82 +212,101 @@ ip_mat * ip_mat_subset(ip_mat * t, unsigned int row_start, unsigned int row_end,
     return out;
 }
 
-
-/**** PARTE 1: OPERAZIONI MATEMATICHE FRA IP_MAT ****/
-ip_mat * ip_mat_sum(ip_mat * a, ip_mat * b){        /*  SOMMA DUE MATRCI*/    
-    if(a->w==b->w && a->h==b->h && a->k==b->k){     /* se a è uguale a b allora*/
-        int i,j,z;                                  /* indice di scorrimento canali, colonne, righe*/
-        ip_mat *out;                                /* la nuova matrice "sommata"*/
-        out = ip_mat_create(a->h,a->w,a->k,0);      /* creo la nuova matrice che ospiterà la somma*/
-        
-        for(i=0;i<out->k;i++)                       
-            for(j=0;j<out->h;j++)
-                for(z=0;z<out->w;z++)
-                    set_val(out,j,z,i,(get_val(a,j,z,i)+get_val(b,j,z,i))); /* assegno alla matrice la somma*/
-        
-       return out;                                  /* restituisco la matrice*/
-    }else{
-        printf("Dimensions not equals\n");          /* le dimensioni delle matrici non sono uguali quindi non sommo*/
-        exit(1);
+/* Inizializza una ip_mat con dimensioni w h e k.
+ * Ogni elemento è generato da una gaussiana con media mean e varianza var
+ * 
+ * Genera dei numeri casuali con distribuzione Normale
+ */
+void ip_mat_init_random(ip_mat * t, float mean, float var){
+    int i,j,z;
+    compute_stats(t);
+    
+    for(i=0;i<t->k;i++){
+        for(j=0;j<t->h;j++){
+            for(z=0;z<t->w;z++){
+                /*float gauss = 1/(sqrt(2*PI*pow(var,2)))*exp((-pow((t->stat[i].max-mean), 2))/(2*pow(var,2)));*/
+                float gauss = get_normal_random()*var+mean;
+                set_val(t,j,z,i,gauss);
+            }
+        }
     }
 }
 
-ip_mat * ip_mat_sub(ip_mat * a, ip_mat * b){        /*  SOTTRAI DUE MATRICI*/        
-    if(a->w==b->w && a->h==b->h && a->k==b->k){     /* se a è uguale a b allora*/
-        int i,j,z;                                  /* indice di scorrimento canali, colonne, righe*/
-        ip_mat *out;                                /* la nuova matrice "sottratta"*/
-        out = ip_mat_create(a->h,a->w,a->k,0);      /* creo la matrice che ospiterà la somma*/
+/**** PARTE 1: OPERAZIONI MATEMATICHE FRA IP_MAT ****/
+ip_mat * ip_mat_sum(ip_mat * a, ip_mat * b){
+    if(a->w==b->w && a->h==b->h && a->k==b->k){
+        int i,j,z;
+        ip_mat *out;
+        out = ip_mat_create(a->h,a->w,a->k,0);
         
         for(i=0;i<out->k;i++)
             for(j=0;j<out->h;j++)
                 for(z=0;z<out->w;z++)
-                    set_val(out,j,z,i,(get_val(a,j,z,i)-get_val(b,j,z,i))); /* assegno alla matrice la differenza*/
+                    set_val(out,j,z,i,(get_val(a,j,z,i)+get_val(b,j,z,i)));
         
        return out;
     }else{
-        printf("Dimensions not equals\n");          /* se le dimensioni non sono uguali allora non sottraggo*/
+        printf("Dimensions not equals\n");
         exit(1);
     }
 }
 
-ip_mat * ip_mat_mul_scalar(ip_mat *a, float c){     /*  MOLTIPLICA PER UNO SCALARE*/
-    int i,j,z;                                      /* indice di scorrimento canali, righe, colonne*/
-    ip_mat *out;                                    /* matrice moltiplicata*/
-    out = ip_mat_create(a->h,a->w,a->k,0);          /* creo la matrice che ospiterà la moltiplicazione*/
-    
-    for(i=0;i<out->k;i++)
-        for(j=0;j<out->h;j++)
-            for(z=0;z<out->w;z++)
-                set_val(out,j,z,i,(get_val(a,j,z,i)*c));    /* matrice che ospita la moltiplicazione*/
-    return out;                                             /* restituisci la matrice moltiplica*/
+ip_mat * ip_mat_sub(ip_mat * a, ip_mat * b){
+    if(a->w==b->w && a->h==b->h && a->k==b->k){
+        int i,j,z;
+        ip_mat *out;
+        out = ip_mat_create(a->h,a->w,a->k,0);
+        
+        for(i=0;i<out->k;i++)
+            for(j=0;j<out->h;j++)
+                for(z=0;z<out->w;z++)
+                    set_val(out,j,z,i,(get_val(a,j,z,i)-get_val(b,j,z,i)));
+        
+       return out;
+    }else{
+        printf("Dimensions not equals\n");
+        exit(1);
+    }
 }
 
-ip_mat * ip_mat_add_scalar(ip_mat *a, float c){ /* SOMMO UNO SCALARE ALLA MATRICE*/
-    int i,j,z;                                  /* indice di scorrimento canali, righe, colonne*/
-    ip_mat *out;                                /* matrice in uscita "sommata"*/
-    out = ip_mat_create(a->h,a->w,a->k,0);      /* creo la matrice che ospiterà la somma*/
+ip_mat * ip_mat_mul_scalar(ip_mat *a, float c){
+    int i,j,z;
+    ip_mat *out;
+    out = ip_mat_create(a->h,a->w,a->k,0);
     
     for(i=0;i<out->k;i++)
         for(j=0;j<out->h;j++)
             for(z=0;z<out->w;z++)
-                set_val(out,j,z,i,(get_val(a,j,z,i)+c));    /* sommo lo scalare alla nuova matrice*/
+                set_val(out,j,z,i,(get_val(a,j,z,i)*c));
+    return out;
+}
+
+ip_mat * ip_mat_add_scalar(ip_mat *a, float c){
+    int i,j,z;
+    ip_mat *out;
+    out = ip_mat_create(a->h,a->w,a->k,0);
     
-    return out;                                 /* restituisco la nuova matrice*/
+    for(i=0;i<out->k;i++)
+        for(j=0;j<out->h;j++)
+            for(z=0;z<out->w;z++)
+                set_val(out,j,z,i,(get_val(a,j,z,i)+c));
+    
+    return out;
 }
 
 /* NON SONO SICURO SU QUESTA */
-ip_mat * ip_mat_mean(ip_mat * a, ip_mat * b){   /* FACCIO LA MEDIA TRA DUE MATRICI*/
+ip_mat * ip_mat_mean(ip_mat * a, ip_mat * b){
     /* ogni elem è la media tra a e b */
-    int i,j,z;                                  /* indice di scorrimento canali, colonne, righe*/
-    ip_mat *out;                                /* la matrice "media"*/
-    out = ip_mat_create(a->h,a->w,a->k,0);      /* creo la matrice "media"*/
+    int i,j,z;
+    ip_mat *out;
+    out = ip_mat_create(a->h,a->w,a->k,0);
     
     for(i=0;i<out->k;i++)
         for(j=0;j<out->h;j++)
             for(z=0;z<out->w;z++)
-                set_val(out,j,z,i,(get_val(a,j,z,i)+get_val(b,j,z,i))/2); /*matrice con la media*/
+                set_val(out,j,z,i,(get_val(a,j,z,i)+get_val(b,j,z,i))/2);
     
-    return out;                                 /* restituisco la matrice con la media*/
+    return out;
 }
 
 
@@ -337,7 +356,7 @@ ip_mat * ip_mat_concat(ip_mat * a, ip_mat * b, int dimensione){
             
             for(i=0;i<out->k;i++){
                 for(j=0;j<out->h;j++){
-                    /-*puntatore ad array di float*-/
+                    *puntatore ad array di float*
                     memcpy(out->data[j], a->data[j], sizeof(float)*a->w);
                     memcpy(out->data[j]+a->w, a->data[j], sizeof(float)*a->w);
                     
@@ -369,55 +388,56 @@ ip_mat * ip_mat_concat(ip_mat * a, ip_mat * b, int dimensione){
     }*/
 }
 
-void compute_stats(ip_mat * t){                     /*  CALCOLO MINIMO MASSIMO E MEDIA E LI SALVO IN IP_MAT STAT*/
+void compute_stats(ip_mat * t){
     /*per ogni canale
-    *
-    *    scorro le colonne
-    *        scorro le righe
-    *            sommo a tot ogni valore
-    *            count +1
-    *            se è il min setto min
-    *            se è il max setto max
-    *    calcolo tot/count
-    *    
-    *    inserisco i dati in stats di i
+    
+        scorro le colonne
+            scorro le righe
+                sommo a tot ogni valore
+                count +1
+                se è il min setto min
+                se è il max setto max
+        calcolo tot/count
+        
+        inserisco i dati in stats di i
     */
-    int i,j,z;                                  /* indice di scorrimento canali, colonne, righe*/
+    int i,j,z;
     
     for(i=0;i<t->k;i++){
-        float tot, count, max, min;             /* totale, contatore, massimo, minimo*/
-        tot = count = 0.0;                      /* inizializzo totale e count*/
-        max = INT_MIN;                          /* assegno a massimo, int_min*/
-        min = INT_MAX;                          /* assegno a minimo, int_max*/
+        float tot, count, max, min;
+        tot = count = 0.0;
+        max = INT_MIN;
+        min = INT_MAX;
         
         for(j=0;j<t->h;j++){
             for(z=0;z<t->w;z++){
-                float tmp = get_val(t,j,z,i);   /* temporaneo*/
-                tot += tmp;                     /* assegno a tot ogni valore*/
-                count++;                        /* aumento il contatore*/
-                if(tmp<min) min = tmp;          /* trovo il minore e assegno*/
-                if(tmp>max) max = tmp;          /* trovo il maggiore e assegno*/
+                float tmp = get_val(t,j,z,i);
+                tot += tmp;
+                count++;
+                if(tmp<min) min = tmp;
+                if(tmp>max) max = tmp;
             }
         }
         
-        t->stat[i].min = min;                   /*minimo*/
-        t->stat[i].max = max;                   /*massimo*/
-        t->stat[i].mean = tot/count;            /* avg */
+        t->stat[i].min = min;
+        t->stat[i].max = max;
+        t->stat[i].mean = tot/count; /* avg */
     }
 
 }
 
 
+
 /**** PARTE 2: SEMPLICI OPERAZIONI SU IMMAGINI ****/
 
-ip_mat * ip_mat_to_gray_scale(ip_mat * in){     /* IMMAGINE SCALA DI GRIGI*/
-    int i,j,z;                                  /* indici di scorrimento canali, colonne, righe*/
-    ip_mat *out;                                /* matrcie di uscita "grigia"*/
-    out = ip_mat_create(in->h,in->w,in->k,0);   /* creo la matrice che ospiterà la scala di grigi*/
+ip_mat * ip_mat_to_gray_scale(ip_mat * in){
+    int i,j,z;
+    ip_mat *out;
+    out = ip_mat_create(in->h,in->w,in->k,0);
     
-    for(j=0;j<out->h;j++){                      
+    for(j=0;j<out->h;j++){
         for(z=0;z<out->w;z++){
-            float tot,count;                    /* ?? non mi è molto chiaro*/
+            float tot,count;
             tot = count = 0.0;
             for(i=0;i<out->k;i++){
                 tot += get_val(in,j,z,i);
@@ -434,35 +454,65 @@ ip_mat * ip_mat_to_gray_scale(ip_mat * in){     /* IMMAGINE SCALA DI GRIGI*/
 
 /* Effettua la fusione (combinazione convessa) di due immagini */
 /* DA testare */
-ip_mat * ip_mat_blend(ip_mat * a, ip_mat * b, float alpha){         /*COMBINAZIONE TRA DUE IMMAGINI -CONVESSA-*/
-    if(alpha>=0 && alpha<=1 && a->w==b->w && a->h==b->h && a->k==b->k){ /* verifico se hanno la stessa dimensione*/
-        int i,j,z;                                  /* indice di scorrimento canali, colonne, righe*/
-        ip_mat *out;                                /* matrice uscita "fusione"*/
-        out = ip_mat_create(a->h,a->w,a->k,0);      /* creo matrice che ospiterà la fusione*/
+ip_mat * ip_mat_blend(ip_mat * a, ip_mat * b, float alpha){
+    if(alpha>=0.0 && alpha<=1.0 && a->w==b->w && a->h==b->h && a->k==b->k){
+        int i,j,z;
+        ip_mat *out;
+        out = ip_mat_create(a->h,a->w,a->k,0);
         
         for(i=0;i<out->k;i++){
             for(j=0;j<out->h;j++){
                 for(z=0;z<out->w;z++){
-                    int blend = alpha * get_val(a,j,z,i) + (1-alpha)* get_val(b,j,z,i); /* sommo le due immagini*/
-                    set_val(out,j,z,i,blend);       /* setto i valori della nuova immagine "fusione"*/
+                    float blend = alpha * get_val(a,j,z,i) + (1-alpha)* get_val(b,j,z,i);
+                    set_val(out,j,z,i,blend);
                 }
             }
         }
         
-        return out;                                 /* restituisco la nuova matrice "fusione"*/
+        return out;
     }else{
-        printf("Alpha not in range or dimensions not equals\n"); /* se non hanno la stessa dimensione non sovrappongo*/
+        printf("Alpha not in range or dimensions not equals\n");
         exit(1);
     }
 }
 
-ip_mat * ip_mat_brighten(ip_mat * a, float bright){ /* AUMENTO LA LUMINOSITA' DELL'IMMAGINE*/ 
-    return ip_mat_add_scalar(a, bright);            /* sfrutto la funzione scalare per sommare il livello di luminosità*/
-}                                                   /* che voglio aumentare*/ 
+ip_mat * ip_mat_brighten(ip_mat * a, float bright){
+    return ip_mat_add_scalar(a, bright);
+}
 
 
 
 
+ip_mat * ip_mat_convolve(ip_mat * input, ip_mat * filter){
+    int h,w;
+    h=(input->h)-(filter->h)+1;
+    w=(input->w)-(filter->w)+1;
+    if (h>0 && w>0){
+        int i,j,z;
+        ip_mat *out;
+        out = ip_mat_create(h,w,input->k,0);
+        for(i=0;i<out->k;i++){
+            for(j=0;j<out->h;j++){
+                for(z=0;z<out->w;z++){
+                    float risultato=0.;
+                    int a,b;
+                    for (a=0;a<filter->h;a++){
+                        for(b=0;b<filter->w;b++){
+                            float punto = filter->data[i][a][b];
+                            risultato += punto*(input->data[i][a+j][b+z]);
+                        }
+                        set_val(out,j,z,i,risultato);
+                    }
+                }
+            }
+        }
+        return out;
+    }
+    else{
+        printf("Dimensions not equals\n");
+        exit(1);
+    }
+}
 
 
 
