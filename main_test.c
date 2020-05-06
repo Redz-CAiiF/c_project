@@ -98,10 +98,73 @@ int main (int argc, char * argv[]) {
     d = ip_mat_mean(p, b);
     print_ip_mat(d);
     
+    ip_mat_free(d);
+    
+    d = ip_mat_create(3,3,3,0);
+    
+    printf("INIT RANDOM:\n");
+    ip_mat_init_random(d, 3.5, 35);
+    print_ip_mat(d);
+    
     
     ip_mat_free(b);
     ip_mat_free(p);
     ip_mat_free(d);
-     
+    
+    
+    /* immage generating area */
+    Bitmap *temp_bit, *temp_bit2;
+    ip_mat *map_ip,*map_ip2,*gray_temp_bit;
+    temp_bit = bm_load("flower2.bmp");
+    temp_bit2 = bm_load("mongolfiere.bmp");
+    map_ip = bitmap_to_ip_mat(temp_bit);
+    map_ip2 = bitmap_to_ip_mat(temp_bit2);
+    
+    gray_temp_bit = ip_mat_blend(map_ip, map_ip2, .50);
+    
+    temp_bit = ip_mat_to_bitmap(gray_temp_bit);
+    
+    bm_save(temp_bit,"grey_scale.bmp");
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
