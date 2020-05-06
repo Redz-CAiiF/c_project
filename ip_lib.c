@@ -3,6 +3,8 @@
 */
 
 #include <stdio.h>
+#include <string.h> /*only memcpy*/
+#include <limits.h>
 #include "ip_lib.h"
 #include "bmp.h"
 
@@ -256,11 +258,10 @@ ip_mat * ip_mat_mul_scalar(ip_mat *a, float c){
         for(j=0;j<out->h;j++)
             for(z=0;z<out->w;z++)
                 set_val(out,j,z,i,(get_val(a,j,z,i)*c));
-    
     return out;
 }
 
-ip_mat *  ip_mat_add_scalar(ip_mat *a, float c){
+ip_mat * ip_mat_add_scalar(ip_mat *a, float c){
     int i,j,z;
     ip_mat *out;
     out = ip_mat_create(a->h,a->w,a->k,0);
@@ -273,11 +274,136 @@ ip_mat *  ip_mat_add_scalar(ip_mat *a, float c){
     return out;
 }
 
+/* NON SONO SICURO SU QUESTA */
+ip_mat * ip_mat_mean(ip_mat * a, ip_mat * b){
+    /* ogni elem è la media tra a e b */
+    int i,j,z;
+    ip_mat *out;
+    out = ip_mat_create(a->h,a->w,a->k,0);
+    
+    for(i=0;i<out->k;i++)
+        for(j=0;j<out->h;j++)
+            for(z=0;z<out->w;z++)
+                set_val(out,j,z,i,(get_val(a,j,z,i)+get_val(b,j,z,i))/2);
+    
+    return out;
+}
 
 
 
+
+
+/* Concatena due ip_mat su una certa dimensione.
+ * Ad esempio:
+ * ip_mat_concat(ip_mat * a, ip_mat * b, 0);
+ *      produrrà un nuovo ip_mat di dimensioni:
+ *      out.h = a.h + b.h
+ *      out.w = a.w = b.w
+ *      out.k = a.k = b.k
+ *
+ * ip_mat_concat(ip_mat * a, ip_mat * b, 1);
+ *      produrrà un nuovo ip_mat di dimensioni:
+ *      out.h = a.h = b.h
+ *      out.w = a.w + b.w
+ *      out.k = a.k = b.k
+ *
+ * ip_mat_concat(ip_mat * a, ip_mat * b, 2);
+ *      produrrà un nuovo ip_mat di dimensioni:
+ *      out.h = a.h = b.h
+ *      out.w = a.w = b.w
+ *      out.k = a.k + b.k
+ * */
+ip_mat * ip_mat_concat(ip_mat * a, ip_mat * b, int dimensione){
+    /*switch (dimensione){
+        case 0: 
+        if(a->w == b->w && a->k == b->k){
+            int i,j,z;
+            ip_mat *out;
+            out = ip_mat_create(a->h+b->h,a->w,a->k,0);
+            
+            
+            return out;
+        }else{
+            printf("Dimensions not correct\n");
+            exit(1);
+        }
+        break;
+        case 1: 
+        if(a->h == b->h && a->k == b->k){
+            int i,j,z;
+            ip_mat *out;
+            out = ip_mat_create(a->h,a->w+b->w,a->k,0);
+            
+            for(i=0;i<out->k;i++){
+                for(j=0;j<out->h;j++){
+                    /*puntatore ad array di float*
+                    memcpy(out->data[j], a->data[j], sizeof(float)*a->w);
+                    memcpy(out->data[j]+a->w, a->data[j], sizeof(float)*a->w);
+                    
+                }
+            }
+            
+            
+            
+            return out;
+        }else{
+            printf("Dimensions not correct\n");
+            exit(1);
+        }
+        break;
+        case 2: 
+        if(a->h == b->h && a->w == b->w){
+            int i,j,z;
+            ip_mat *out;
+            out = ip_mat_create(a->h,a->w,a->k+b->k,0);
+            
+            
+            
+            return out;
+        }else{
+            printf("Dimensions not correct\n");
+            exit(1);
+        }
+        break;
+    }*/
+}
 
 void compute_stats(ip_mat * t){
+    /*per ogni canale
+    
+        scorro le colonne
+            scorro le righe
+                sommo a tot ogni valore
+                count +1
+                se è il min setto min
+                se è il max setto max
+        calcolo tot/count
+        
+        inserisco i dati in stats di i
+    */
+    int i,j,z;
+    
+    for(i=0;i<t->k;i++){
+        float tot, count, max, min;
+        tot = count = 0.0;
+        max = INT_MIN;
+        min = INT_MAX;
+        
+        for(j=0;j<t->h;j++){
+            for(z=0;z<t->w;z++){
+                float tmp = get_val(t,j,z,i);
+                tot += tmp;
+                count++;
+                if(tmp<min) min = tmp;
+                if(tmp>max) max = tmp;
+            }
+        }
+        
+        t->stat[i].min = min;
+        t->stat[i].max = max;
+        t->stat[i].mean = tot/count; /* avg */
+    }
+
 }
 
 

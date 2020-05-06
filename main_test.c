@@ -82,6 +82,21 @@ int main (int argc, char * argv[]) {
     d = ip_mat_to_gray_scale(p);
     print_ip_mat(d);
     
+    ip_mat_free(d);
+    
+    /*printf("CONCAT:\n");
+    d = ip_mat_concat(p,b,1);
+    print_ip_mat(d);
+    
+    ip_mat_free(d);*/
+    
+    printf("STATS:\n");
+    compute_stats(p);
+    ip_mat_show_stats(p);
+    
+    printf("MEDIA MATRICI:\n");
+    d = ip_mat_mean(p, b);
+    print_ip_mat(d);
     
     
     ip_mat_free(b);
