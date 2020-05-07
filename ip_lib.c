@@ -3,8 +3,7 @@
 */
 
 #include <stdio.h>
-#include <math.h> 
-#include <string.h> /*only memcpy*/
+#include <math.h>
 #include <limits.h>
 #include "ip_lib.h"
 #include "bmp.h"
@@ -414,6 +413,9 @@ ip_mat * ip_mat_concat(ip_mat * a, ip_mat * b, int dimensione){
             exit(1);
         }
         break;
+        default:
+            printf("General error\n");
+            exit(1);
     }
 }
 
@@ -509,7 +511,6 @@ ip_mat * ip_mat_brighten(ip_mat * a, float bright){
     return ip_mat_add_scalar(a, bright);
 }
 
-
 ip_mat * ip_mat_corrupt(ip_mat * a, float amount){
     ip_mat *out,*tmp;
     out = ip_mat_create(a->h,a->w,a->k,0);
@@ -519,6 +520,9 @@ ip_mat * ip_mat_corrupt(ip_mat * a, float amount){
     free(tmp);
     return out;
 }
+
+
+/**** PARTE 3: CONVOLUZIONE E FILTRI *****/
 
 ip_mat * ip_mat_convolve(ip_mat * input, ip_mat * filter){
     int h,w;
@@ -538,7 +542,6 @@ ip_mat * ip_mat_convolve(ip_mat * input, ip_mat * filter){
                             float punto = filter->data[0][a][b];
                             risultato += punto*(input->data[i][a+j][b+z]);
                         }
-                        s
                     }
                 }
             }
@@ -550,10 +553,11 @@ ip_mat * ip_mat_convolve(ip_mat * input, ip_mat * filter){
         exit(1);
     }
 }
+
 ip_mat * ip_mat_padding(ip_mat * a, int pad_h, int pad_w){
-    p_mat *out;
-    out = ip_mat_create(a->h+(2*pad_h),a->w+(2*pad_w),a->k,0);
     int i,j,z;
+    ip_mat *out;
+    out = ip_mat_create(a->h+(2*pad_h),a->w+(2*pad_w),a->k,0);
         for(i=0;i<out->k;i++){
             for(j=0;j<out->h;j++){
                 for(z=0;z<out->w;z++){
@@ -561,7 +565,7 @@ ip_mat * ip_mat_padding(ip_mat * a, int pad_h, int pad_w){
                         set_val(out,j,z,i,a->data[i][j-(2*pad_h)][z-(2*pad_w)]);
                         
                     }else{
-                        set_val(out,j,z,i,0])
+                        set_val(out,j,z,i,0);
                     }
                 }
             }

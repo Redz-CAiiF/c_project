@@ -17,10 +17,9 @@ void print_ip_mat(ip_mat *b){
         printf("\nDIM %d:\n",i);
     }
 }
-    
 
 int main (int argc, char * argv[]) {
-    ip_mat *p,*b,*d;
+    ip_mat *p,*b,*d, *f;
     
     p = ip_mat_create(5,4,3,5);
     
@@ -84,12 +83,6 @@ int main (int argc, char * argv[]) {
     
     ip_mat_free(d);
     
-    /*printf("CONCAT:\n");
-    d = ip_mat_concat(p,b,1);
-    print_ip_mat(d);
-    
-    ip_mat_free(d);*/
-    
     printf("STATS:\n");
     compute_stats(p);
     ip_mat_show_stats(p);
@@ -111,6 +104,22 @@ int main (int argc, char * argv[]) {
     ip_mat_free(p);
     ip_mat_free(d);
     
+    p = ip_mat_create(5,4,1,5);
+    b = ip_mat_create(5,4,1,3);
+    
+    printf("CONCAT:\n");
+    d = ip_mat_concat(p,b,0);
+    
+    set_val(p,2,2,0,10.);
+    
+    print_ip_mat(d);
+    print_ip_mat(p);
+    
+    
+    ip_mat_free(b);
+    ip_mat_free(p);
+    ip_mat_free(d);
+    
     
     
     
@@ -123,23 +132,75 @@ int main (int argc, char * argv[]) {
     map_ip = bitmap_to_ip_mat(temp_bit);
     map_ip2 = bitmap_to_ip_mat(temp_bit2);
 
-    gray_temp_bit = ip_mat_blend(map_ip2, map_ip,0.25);
+    gray_temp_bit = ip_mat_corrupt(map_ip, 255.);
 
     temp_bit = ip_mat_to_bitmap(gray_temp_bit);
 
     bm_save(temp_bit,"grey_scale.bmp");
     
     
+    p = ip_mat_create(5,5,1,0);
+    b = ip_mat_create(3,3,1,0);
+    
+    set_val(p,0,0,0,7);
+    set_val(p,0,1,0,2);
+    set_val(p,0,2,0,3);
+    set_val(p,0,3,0,3);
+    set_val(p,0,4,0,8);
+    
+    set_val(p,1,0,0,4);
+    set_val(p,1,1,0,5);
+    set_val(p,1,2,0,3);
+    set_val(p,1,3,0,8);
+    set_val(p,1,4,0,4);
+    
+    set_val(p,2,0,0,3);
+    set_val(p,2,1,0,3);
+    set_val(p,2,2,0,2);
+    set_val(p,2,3,0,8);
+    set_val(p,2,4,0,4);
+    
+    set_val(p,3,0,0,2);
+    set_val(p,3,1,0,8);
+    set_val(p,3,2,0,7);
+    set_val(p,3,3,0,2);
+    set_val(p,3,4,0,7);
+    
+    set_val(p,4,0,0,5);
+    set_val(p,4,1,0,4);
+    set_val(p,4,2,0,4);
+    set_val(p,4,3,0,5);
+    set_val(p,4,4,0,4);
+    
+    printf("ORIGINAL:\n");
+    print_ip_mat(p);
     
     
+    set_val(b,0,0,0,1);
+    set_val(b,0,1,0,0);
+    set_val(b,0,2,0,-1);
+    
+    set_val(b,1,0,0,1);
+    set_val(b,1,1,0,0);
+    set_val(b,1,2,0,-1);
+    
+    set_val(b,2,0,0,1);
+    set_val(b,2,1,0,0);
+    set_val(b,2,2,0,-1);
+    
+    printf("KERNEL:\n");
+    print_ip_mat(b);
+    
+    d = ip_mat_convolve(p,b);
+    printf("OUTPUT:\n");
+    print_ip_mat(d);
     
     
+    f = ip_mat_padding(p, 1, 1);
+    printf("PADDING:\n");
+    print_ip_mat(f);
     
-    
-    
-    
-    
-    
+    printf("test: %d\n",test(5));
     
     return 0;
 }
