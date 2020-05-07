@@ -334,13 +334,28 @@ ip_mat * ip_mat_mean(ip_mat * a, ip_mat * b){
  *      out.k = a.k + b.k
  * */
 ip_mat * ip_mat_concat(ip_mat * a, ip_mat * b, int dimensione){
-    /*switch (dimensione){
+    switch (dimensione){
         case 0: 
         if(a->w == b->w && a->k == b->k){
             int i,j,z;
             ip_mat *out;
             out = ip_mat_create(a->h+b->h,a->w,a->k,0);
-            
+            for(i=0;i<a->k;i++){
+                for(j=0;j<a->h;j++){
+                    for(z=0;z<a->w;z++){
+                        float tmp = get_val(a,j,z,i);
+                        set_val(out,j,z,i,tmp);
+                    }
+                }
+            }
+            for(i=0;i<b->k;i++){
+                for(j=0;j<b->h;j++){
+                    for(z=0;z<b->w;z++){
+                        float tmp = get_val(b,j,z,i);
+                        set_val(out,(j+(a->h)),z,i,tmp);
+                    }
+                }
+            }
             
             return out;
         }else{
@@ -348,36 +363,50 @@ ip_mat * ip_mat_concat(ip_mat * a, ip_mat * b, int dimensione){
             exit(1);
         }
         break;
-        case 1: 
+        case 1:
         if(a->h == b->h && a->k == b->k){
             int i,j,z;
             ip_mat *out;
             out = ip_mat_create(a->h,a->w+b->w,a->k,0);
-            
-            for(i=0;i<out->k;i++){
-                for(j=0;j<out->h;j++){
-                    *puntatore ad array di float*
-                    memcpy(out->data[j], a->data[j], sizeof(float)*a->w);
-                    memcpy(out->data[j]+a->w, a->data[j], sizeof(float)*a->w);
-                    
+            for(i=0;i<a->k;i++){
+                for(j=0;j<a->h;j++){
+                    for(z=0;z<a->w;z++){
+                        set_val(out,j,z,i,get_val(a,j,z,i));
+                    }
                 }
             }
-            
-            
-            
+            for(i=0;i<b->k;i++){
+                for(j=0;j<b->h;j++){
+                    for(z=0;z<b->w;z++){
+                        set_val(out,j,z+(a->w),i,get_val(b,j,z,i));
+                    }
+                }
+            }
             return out;
         }else{
             printf("Dimensions not correct\n");
             exit(1);
         }
         break;
-        case 2: 
+        case 2:
         if(a->h == b->h && a->w == b->w){
             int i,j,z;
             ip_mat *out;
             out = ip_mat_create(a->h,a->w,a->k+b->k,0);
-            
-            
+            for(i=0;i<a->k;i++){
+                for(j=0;j<a->h;j++){
+                    for(z=0;z<a->w;z++){
+                        set_val(out,j,z,i,get_val(a,j,z,i));
+                    }
+                }
+            }
+            for(i=0;i<b->k;i++){
+                for(j=0;j<b->h;j++){
+                    for(z=0;z<b->w;z++){
+                        set_val(out,j,z,i+(a->k),get_val(b,j,z,i));
+                    }
+                }
+            }
             
             return out;
         }else{
@@ -385,7 +414,7 @@ ip_mat * ip_mat_concat(ip_mat * a, ip_mat * b, int dimensione){
             exit(1);
         }
         break;
-    }*/
+    }
 }
 
 void compute_stats(ip_mat * t){
@@ -481,7 +510,15 @@ ip_mat * ip_mat_brighten(ip_mat * a, float bright){
 }
 
 
-
+ip_mat * ip_mat_corrupt(ip_mat * a, float amount){
+    ip_mat *out,*tmp;
+    out = ip_mat_create(a->h,a->w,a->k,0);
+    ip_mat_init_random(out,0,0.25);
+    tmp=ip_mat_mul_scalar(out,amount);
+    out=ip_mat_sum(a,tmp);
+    free(tmp);
+    return out;
+}
 
 ip_mat * ip_mat_convolve(ip_mat * input, ip_mat * filter){
     int h,w;
@@ -492,16 +529,16 @@ ip_mat * ip_mat_convolve(ip_mat * input, ip_mat * filter){
         ip_mat *out;
         out = ip_mat_create(h,w,input->k,0);
         for(i=0;i<out->k;i++){
-            for(j=0;j<out->h;j++){
-                for(z=0;z<out->w;z++){
+            for(j=0;j<out->h-1;j++){
+                for(z=0;z<out->w-1;z++){
                     float risultato=0.;
                     int a,b;
                     for (a=0;a<filter->h;a++){
                         for(b=0;b<filter->w;b++){
-                            float punto = filter->data[i][a][b];
+                            float punto = filter->data[0][a][b];
                             risultato += punto*(input->data[i][a+j][b+z]);
                         }
-                        set_val(out,j,z,i,risultato);
+                        s
                     }
                 }
             }
@@ -512,6 +549,24 @@ ip_mat * ip_mat_convolve(ip_mat * input, ip_mat * filter){
         printf("Dimensions not equals\n");
         exit(1);
     }
+}
+ip_mat * ip_mat_padding(ip_mat * a, int pad_h, int pad_w){
+    p_mat *out;
+    out = ip_mat_create(a->h+(2*pad_h),a->w+(2*pad_w),a->k,0);
+    int i,j,z;
+        for(i=0;i<out->k;i++){
+            for(j=0;j<out->h;j++){
+                for(z=0;z<out->w;z++){
+                    if (((out->h)-j<=a->h)&&((out->h)-j>=2*pad_h)&&((out->w)-z<=a->w)&&((out->w)-z>=2*pad_w)){
+                        set_val(out,j,z,i,a->data[i][j-(2*pad_h)][z-(2*pad_w)]);
+                        
+                    }else{
+                        set_val(out,j,z,i,0])
+                    }
+                }
+            }
+    }
+    return out;
 }
 
 

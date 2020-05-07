@@ -112,6 +112,9 @@ int main (int argc, char * argv[]) {
     ip_mat_free(d);
     
     
+    
+    
+    
     /* immage generating area */
     Bitmap *temp_bit, *temp_bit2;
     ip_mat *map_ip,*map_ip2,*gray_temp_bit;
@@ -119,11 +122,11 @@ int main (int argc, char * argv[]) {
     temp_bit2 = bm_load("mongolfiere.bmp");
     map_ip = bitmap_to_ip_mat(temp_bit);
     map_ip2 = bitmap_to_ip_mat(temp_bit2);
-    
-    gray_temp_bit = ip_mat_blend(map_ip, map_ip2, .50);
-    
+
+    gray_temp_bit = ip_mat_blend(map_ip2, map_ip,0.25);
+
     temp_bit = ip_mat_to_bitmap(gray_temp_bit);
-    
+
     bm_save(temp_bit,"grey_scale.bmp");
     
     
