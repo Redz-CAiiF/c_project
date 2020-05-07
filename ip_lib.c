@@ -570,6 +570,90 @@ ip_mat * ip_mat_padding(ip_mat * a, int pad_h, int pad_w){
 }
 
 
+ip_mat * create_sharpen_filter(){
+    ip_mat *out;
+    out = ip_mat_create(3,3,1,0);
+    set_val(out,0,0,0,0);
+    set_val(out,0,1,0,-1);
+    set_val(out,0,2,0,0);
+    set_val(out,1,0,0,-1);
+    set_val(out,1,1,0,5);
+    set_val(out,1,2,0,-1);
+    set_val(out,2,0,0,0);
+    set_val(out,2,1,0,-1);
+    set_val(out,2,2,0,0);
+    return out;
+}    
+
+ip_mat * create_edge_filter(){
+    ip_mat *out;
+    out = ip_mat_create(3,3,1,0);
+    set_val(out,0,0,0,-1);
+    set_val(out,0,1,0,-1);
+    set_val(out,0,2,0,-1);
+    set_val(out,1,0,0,-1);
+    set_val(out,1,1,0,8);
+    set_val(out,1,2,0,-1);
+    set_val(out,2,0,0,-1);
+    set_val(out,2,1,0,-1);
+    set_val(out,2,2,0,-1);
+    return out;
+} 
+
+ip_mat * create_emboss_filter(){
+    ip_mat *out;
+    out = ip_mat_create(3,3,1,0);
+    set_val(out,0,0,0,-2);
+    set_val(out,0,1,0,-1);
+    set_val(out,0,2,0,0);
+    set_val(out,1,0,0,-1);
+    set_val(out,1,1,0,1);
+    set_val(out,1,2,0,1);
+    set_val(out,2,0,0,0);
+    set_val(out,2,1,0,1);
+    set_val(out,2,2,0,2);
+    return out;
+} 
+
+ip_mat * create_average_filter(int w, int h, int k){
+    int i,j,z;
+    float c=1./(w*h);
+    ip_mat *out;
+    out = ip_mat_create(w,h,k,0);
+    
+    for(i=0;i<out->k;i++){
+        for(j=0;j<out->h;j++){
+            for(z=0;z<out->w;z++){
+                   set_val(out,j,z,i,c); 
+            }
+        }
+    }
+    return out;
+}
+
+ip_mat * create_gaussian_filter(int w, int h, int k, float sigma){
+    ip_mat *out;
+    out = ip_mat_create(w,h,1,0);
+    int i,j;
+    float x,y;
+    float gauss,sum;
+    sum = 0.0;
+    
+    for(i=0;i<out->h;i++){
+        for(j=0;j<out->w;j++){
+            x= i-(h-1)/2.0;
+            y= j-(w-1)/2.0;
+            gauss=1.* exp((pow(x,2.0)+(pow(y,2.0))/((2.0*pow(sigma,2.0))))*(-1.0));
+            set_val(out,i,j,0,gauss);
+            sum=sum+gauss;
+        }
+    }
+    for(i=0;i<out->h;i++){
+        for(j=0;j<out->w;j++){
+            set_val(out,i,j,0,out->data[0][i][j]/sum);
+        }
+    } return out;
+}
 
 
 
