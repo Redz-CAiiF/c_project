@@ -549,8 +549,11 @@ ip_mat * ip_mat_convolve(ip_mat * a, ip_mat * f){
                 set_val(out,c,r,ii,tot);
             }
             
+            ip_mat_free(sub_new_a);
+            
         }
     }
+    ip_mat_free(new_a);
     return out;
 }
 
@@ -633,11 +636,11 @@ ip_mat * create_average_filter(int w, int h, int k){
 
 ip_mat * create_gaussian_filter(int w, int h, int k, float sigma){
     ip_mat *out;
-    out = ip_mat_create(w,h,1,0);
     int i,j;
-    float x,y;
-    float gauss,sum;
+    float x, y, gauss, sum;
+    
     sum = 0.0;
+    out = ip_mat_create(w,h,1,0);
     
     for(i=0;i<out->h;i++){
         for(j=0;j<out->w;j++){
@@ -652,11 +655,27 @@ ip_mat * create_gaussian_filter(int w, int h, int k, float sigma){
         for(j=0;j<out->w;j++){
             set_val(out,i,j,0,out->data[0][i][j]/sum);
         }
-    } return out;
+    }
+    return out;
 }
 
 
-
+/* Nell'operazione di clamping i valori <low si convertono in low e i valori >high in high.*/
+void clamp(ip_mat * t, float low, float high){
+    int i,j,z;
+    for(i=0;i<t->k;i++){
+        for(j=0;j<t->h;j++){
+            for(z=0;z<t->w;z++){
+                float val = get_val(t,j,z,i);
+                if(val<low){
+                    set_val(t,j,z,i,low);
+                }else if(val>high){
+                    set_val(t,j,z,i,high);
+                }
+            }
+        }
+    }
+}
 
 
 

@@ -22,6 +22,7 @@ void print_ip_mat(ip_mat *b){
 void test_fun(){
     ip_mat *p,*b,*d, *f;
     
+    
     p = ip_mat_create(5,4,3,5);
     
     printf("\n%d %d %d\n",p->w,p->h,p->k);
@@ -44,7 +45,6 @@ void test_fun(){
     b = ip_mat_subset(p,1,3,1,2);
     
     print_ip_mat(b);
-    
     
     ip_mat_free(b);
     ip_mat_free(p);
@@ -125,19 +125,7 @@ void test_fun(){
     
     
     
-    /* immage generating area */
-    Bitmap *temp_bit, *temp_bit2;
-    ip_mat *map_ip,*map_ip2,*gray_temp_bit;
-    temp_bit = bm_load("flower2.bmp");
-    temp_bit2 = bm_load("mongolfiere.bmp");
-    map_ip = bitmap_to_ip_mat(temp_bit);
-    map_ip2 = bitmap_to_ip_mat(temp_bit2);
-
-    gray_temp_bit = ip_mat_corrupt(map_ip, 255.);
-
-    temp_bit = ip_mat_to_bitmap(gray_temp_bit);
-
-    bm_save(temp_bit,"grey_scale.bmp");
+    
     
     
     p = ip_mat_create(5,5,1,0);
@@ -230,28 +218,48 @@ void test_fun(){
     ip_mat_free(p);
     ip_mat_free(d);
     ip_mat_free(f);
+    
 }
 
 int main (int argc, char * argv[]) {
     
-    /* immage generating area 2 */
-    Bitmap *immagine_prova;
-    ip_mat *ip_map_immagine_prova, *ip_map_immagine_prova_elaborata;
+    
+    
+    /* immage generating area */
+    Bitmap *temp_bit, *temp_bit2, *immagine_prova;
+    ip_mat *map_ip,*map_ip2,*gray_temp_bit, *ip_map_imm_p, *ip_map_imm_p_elab;
+    temp_bit = bm_load("flower2.bmp");
+    temp_bit2 = bm_load("mongolfiere.bmp");
+    map_ip = bitmap_to_ip_mat(temp_bit);
+    map_ip2 = bitmap_to_ip_mat(temp_bit2);
+
+    gray_temp_bit = ip_mat_corrupt(map_ip, 100.);
+    
+    clamp(gray_temp_bit, 0, 255);
+    
+    temp_bit = ip_mat_to_bitmap(gray_temp_bit);
+    
+    bm_save(temp_bit,"grey_scale.bmp");
+    
+    
+    
+    
     immagine_prova = bm_load("flower.bmp");
     
-    ip_map_immagine_prova = bitmap_to_ip_mat(immagine_prova);
+    ip_map_imm_p = bitmap_to_ip_mat(immagine_prova);
     
-    ip_map_immagine_prova_elaborata = ip_mat_convolve(ip_map_immagine_prova, create_gaussian_filter(7,7,1,.5));
+    ip_map_imm_p_elab = ip_mat_convolve(ip_map_imm_p, create_edge_filter());
 
-    immagine_prova = ip_mat_to_bitmap(ip_map_immagine_prova_elaborata);
+    /*create_gaussian_filter(7,7,1,.5)*/
+    clamp(ip_map_imm_p_elab, 0, 255);
+    
+    immagine_prova = ip_mat_to_bitmap(ip_map_imm_p_elab);
 
     bm_save(immagine_prova,"filter_test.bmp");
     
     
     return 0;
 }
-
-/*controllare che la funzione appena aggiunta faccia il free correttamente*/
 
 
 
