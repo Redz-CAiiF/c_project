@@ -191,16 +191,44 @@ int main (int argc, char * argv[]) {
     printf("KERNEL:\n");
     print_ip_mat(b);
     
-    d = ip_mat_convolve(p,b);
-    printf("OUTPUT:\n");
-    print_ip_mat(d);
-    
-    
     f = ip_mat_padding(p, 1, 1);
     printf("PADDING:\n");
     print_ip_mat(f);
     
-    printf("test: %d\n",test(5));
+    d = ip_mat_convolve(p,b);
+    printf("OUTPUT:\n");
+    print_ip_mat(d);
+    
+    ip_mat_free(b);
+    ip_mat_free(p);
+    ip_mat_free(d);
+    ip_mat_free(f);
+    
+    
+    p = ip_mat_create(5,5,3,5);
+    b = ip_mat_create(3,3,1,0);
+    
+    set_val(b,0,0,0,1);
+    set_val(b,0,1,0,0);
+    set_val(b,0,2,0,-1);
+    
+    set_val(b,1,0,0,1);
+    set_val(b,1,1,0,0);
+    set_val(b,1,2,0,-1);
+    
+    set_val(b,2,0,0,1);
+    set_val(b,2,1,0,0);
+    set_val(b,2,2,0,-1);
+    
+    
+    d = ip_mat_convolve(p,b);
+    printf("\n\nOUTPUT2:\n");
+    print_ip_mat(d);
+    
+    ip_mat_free(b);
+    ip_mat_free(p);
+    ip_mat_free(d);
+    ip_mat_free(f);
     
     return 0;
 }

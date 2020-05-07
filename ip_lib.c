@@ -524,51 +524,47 @@ ip_mat * ip_mat_corrupt(ip_mat * a, float amount){
 
 /**** PARTE 3: CONVOLUZIONE E FILTRI *****/
 
-ip_mat * ip_mat_convolve(ip_mat * input, ip_mat * filter){
-    int h,w;
-    h=(input->h)-(filter->h)+1;
-    w=(input->w)-(filter->w)+1;
-    if (h>0 && w>0){
-        int i,j,z;
-        ip_mat *out;
-        out = ip_mat_create(h,w,input->k,0);
-        for(i=0;i<out->k;i++){
-            for(j=0;j<out->h-1;j++){
-                for(z=0;z<out->w-1;z++){
-                    float risultato=0.;
-                    int a,b;
-                    for (a=0;a<filter->h;a++){
-                        for(b=0;b<filter->w;b++){
-                            float punto = filter->data[0][a][b];
-                            risultato += punto*(input->data[i][a+j][b+z]);
-                        }
+ip_mat * ip_mat_convolve(ip_mat * a, ip_mat * f){
+    int c,r;
+    ip_mat *out, *new_a;
+    out = ip_mat_create(a->h,a->w,a->k,0);
+    new_a = ip_mat_padding(a,(f->h-1)/2,(f->w-1)/2);
+    
+    for(c=0;c<=new_a->h-f->h;c++){
+        for(r=0;r<=new_a->w-f->w;r++){
+            int ii,ic,ir;
+            ip_mat *sub_new_a;
+            sub_new_a = ip_mat_subset(new_a, r, r+f->w, c, c+f->h);
+            
+            for(ii=0;ii<sub_new_a->k;ii++){
+                float tot = 0.0;
+                for(ic=0;ic<sub_new_a->h;ic++){
+                    for(ir=0;ir<sub_new_a->h;ir++){
+                        float t1, t2;
+                        t1 = get_val(sub_new_a,ic,ir,ii);
+                        t2 = get_val(f,ic,ir,0); /* 0 perche il filtro ha sempre solo una dimensione */
+                        tot += t1*t2;
                     }
                 }
+                set_val(out,c,r,ii,tot);
             }
+            
         }
-        return out;
     }
-    else{
-        printf("Dimensions not equals\n");
-        exit(1);
-    }
+    return out;
 }
 
 ip_mat * ip_mat_padding(ip_mat * a, int pad_h, int pad_w){
-    int i,j,z;
+    int i,c,r;
     ip_mat *out;
     out = ip_mat_create(a->h+(2*pad_h),a->w+(2*pad_w),a->k,0);
-        for(i=0;i<out->k;i++){
-            for(j=0;j<out->h;j++){
-                for(z=0;z<out->w;z++){
-                    if (((out->h)-j<=a->h)&&((out->h)-j>=2*pad_h)&&((out->w)-z<=a->w)&&((out->w)-z>=2*pad_w)){
-                        set_val(out,j,z,i,a->data[i][j-(2*pad_h)][z-(2*pad_w)]);
-                        
-                    }else{
-                        set_val(out,j,z,i,0);
-                    }
-                }
+    
+    for(i=0;i<a->k;i++){
+        for(c=0;c<a->h;c++){
+            for(r=0;r<a->w;r++){
+                set_val(out, c+pad_h, r+pad_w, i, get_val(a,c,r,i));
             }
+        }
     }
     return out;
 }
