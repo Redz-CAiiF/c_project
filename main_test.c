@@ -251,6 +251,8 @@ int main (int argc, char * argv[]) {
     ip_map_imm_p_elab = ip_mat_convolve(ip_map_imm_p, create_edge_filter());
 
     /*create_gaussian_filter(7,7,1,.5)*/
+    rescale(ip_map_imm_p_elab,255);
+    
     clamp(ip_map_imm_p_elab, 0, 255);
     
     immagine_prova = ip_mat_to_bitmap(ip_map_imm_p_elab);

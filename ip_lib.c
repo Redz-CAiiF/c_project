@@ -622,7 +622,7 @@ ip_mat * create_average_filter(int w, int h, int k){
     int i,j,z;
     float c=1./(w*h);
     ip_mat *out;
-    out = ip_mat_create(w,h,k,0);
+    out = ip_mat_create(h,w,k,0);
     
     for(i=0;i<out->k;i++){
         for(j=0;j<out->h;j++){
@@ -640,7 +640,7 @@ ip_mat * create_gaussian_filter(int w, int h, int k, float sigma){
     float x, y, gauss, sum;
     
     sum = 0.0;
-    out = ip_mat_create(w,h,1,0);
+    out = ip_mat_create(h,w,1,0);
     
     for(i=0;i<out->h;i++){
         for(j=0;j<out->w;j++){
@@ -658,7 +658,22 @@ ip_mat * create_gaussian_filter(int w, int h, int k, float sigma){
     }
     return out;
 }
-
+void rescale(ip_mat * t, float new_max){
+    int i,j,z;
+    compute_stats(t);
+    for(i=0;i<t->k;i++){
+        for(j=0;j<t->h;j++){
+            for(z=0;z<t->w;z++){
+                float c;
+                c=(get_val(t,j,z,i)-(t->stat[i].min))/((t->stat[i].max)-(t->stat[i].min));
+                printf("%f ",c);
+                set_val(t,j,z,i,c*new_max);
+            }
+            printf("\n");
+        }
+        printf("\n\n\naltro strato:: \n");
+    }
+}
 
 /* Nell'operazione di clamping i valori <low si convertono in low e i valori >high in high.*/
 void clamp(ip_mat * t, float low, float high){
