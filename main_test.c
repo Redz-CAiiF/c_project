@@ -221,8 +221,71 @@ void test_fun(){
     
 }
 
-int main (int argc, char * argv[]) {
+
+int test2(){
     
+}
+
+int main (int argc, char * argv[]) {
+
+    ip_mat *p,*b,*d;
+    
+    p = ip_mat_create(5,5,1,0);
+    b = ip_mat_create(3,3,1,0);
+    
+    set_val(p,0,0,0,7);
+    set_val(p,0,1,0,2);
+    set_val(p,0,2,0,3);
+    set_val(p,0,3,0,3);
+    set_val(p,0,4,0,8);
+    
+    set_val(p,1,0,0,4);
+    set_val(p,1,1,0,5);
+    set_val(p,1,2,0,3);
+    set_val(p,1,3,0,8);
+    set_val(p,1,4,0,4);
+    
+    set_val(p,2,0,0,3);
+    set_val(p,2,1,0,3);
+    set_val(p,2,2,0,2);
+    set_val(p,2,3,0,8);
+    set_val(p,2,4,0,4);
+    
+    set_val(p,3,0,0,2);
+    set_val(p,3,1,0,8);
+    set_val(p,3,2,0,7);
+    set_val(p,3,3,0,2);
+    set_val(p,3,4,0,7);
+    
+    set_val(p,4,0,0,5);
+    set_val(p,4,1,0,4);
+    set_val(p,4,2,0,4);
+    set_val(p,4,3,0,5);
+    set_val(p,4,4,0,4);
+    
+    printf("ORIGINAL:\n");
+    print_ip_mat(p);
+    
+    
+    set_val(b,0,0,0,1);
+    set_val(b,0,1,0,0);
+    set_val(b,0,2,0,-1);
+    
+    set_val(b,1,0,0,1);
+    set_val(b,1,1,0,0);
+    set_val(b,1,2,0,-1);
+    
+    set_val(b,2,0,0,1);
+    set_val(b,2,1,0,0);
+    set_val(b,2,2,0,-1);
+    
+    printf("ORIGINAL:\n");
+    print_ip_mat(b);
+    
+    
+    d = ip_mat_convolve(p,b);
+    printf("OUTPUT:\n");
+    print_ip_mat(d);
     
     
     /* immage generating area */
@@ -253,12 +316,20 @@ int main (int argc, char * argv[]) {
     /*create_gaussian_filter(7,7,1,.5)*/
     rescale(ip_map_imm_p_elab,255);
     
-    clamp(ip_map_imm_p_elab, 0, 255);
+    /*clamp(ip_map_imm_p_elab, 0, 255);*/
     
     immagine_prova = ip_mat_to_bitmap(ip_map_imm_p_elab);
 
     bm_save(immagine_prova,"filter_test.bmp");
     
+    ip_mat_free(b);
+    ip_mat_free(p);
+    ip_mat_free(d);
+    ip_mat_free(map_ip);
+    ip_mat_free(map_ip2);
+    ip_mat_free(gray_temp_bit);
+    ip_mat_free(ip_map_imm_p);
+    ip_mat_free(ip_map_imm_p_elab);
     
     return 0;
 }
