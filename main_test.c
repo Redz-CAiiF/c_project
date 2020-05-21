@@ -153,7 +153,7 @@ int main (int argc, char * argv[]) {
     p = create_average_filter(3,3,3);
     printf("OUTPUT 16:\n");
     print_ip_mat(p);*/
-    p = create_gaussian_filter(3,3,3,.10);
+    p = create_gaussian_filter(5,5,1,1.);
     printf("OUTPUT 17:\n");
     print_ip_mat(p);
     

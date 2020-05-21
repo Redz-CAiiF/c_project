@@ -752,27 +752,29 @@ ip_mat * create_average_filter(unsigned int h, unsigned int w, unsigned int k){
 
 /* Crea un filtro gaussiano per la rimozione del rumore */
 ip_mat * create_gaussian_filter(unsigned int h, unsigned int w, unsigned int k, float sigma){
+    float filter[h][w];
+	float somma=0;
+	int i,j,z;
     ip_mat *out;
-    int i,j;
-    float x, y, gauss, sum;
-    
-    sum = 0.0;
-    out = ip_mat_create(h,w,1,0);
-    
-    for(i=0;i<out->h;i++){
-        for(j=0;j<out->w;j++){
-            x= i-(h-1)/2.0;
-            y= j-(w-1)/2.0;
-            gauss=1.* exp((pow(x,2.0)+(pow(y,2.0))/((2.0*pow(sigma,2.0))))*(-1.0));
-            set_val(out,i,j,0,gauss);
-            sum=sum+gauss;
-        }
-    }
-    for(i=0;i<out->h;i++){
-        for(j=0;j<out->w;j++){
-            set_val(out,i,j,0,out->data[0][i][j]/sum);
-        }
-    }
+    out = ip_mat_create(h,w,k,0);
+	
+	for (i=0;i<h;i++){
+		for(j=0;j<w;j++){
+			float x= i-(h-1)/2.;
+			float y= j-(w-1)/2.;
+			filter[i][j]=1.*exp(((pow(x,2)+pow(y,2))/((2*pow(sigma,2))))*(-1));
+			somma+=filter[i][j];
+		}
+	}
+	for (i=0;i<h;i++){
+		for(j=0;j<w;j++){
+			filter[i][j]/=somma;
+            for(z=0;z<k;z++){
+                set_val(out,i,j,z,filter[i][j]);  
+            }    
+		}
+	}
+
     return out;
 }
 
