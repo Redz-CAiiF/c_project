@@ -267,7 +267,7 @@ void ip_mat_init_random(ip_mat * t, float mean, float std){
         for(j=0;j<t->h;j++){
             for(z=0;z<t->w;z++){
                 /*float gauss = 1/(sqrt(2*PI*pow(std,2)))*exp((-pow((t->stat[i].max-mean), 2))/(2*pow(std,2)));*/
-                float gauss = get_normal_random()*std+mean;
+                float gauss = get_normal_random(mean, std);
                 set_val(t,j,z,i,gauss);
             }
         }
@@ -312,12 +312,12 @@ ip_mat * ip_mat_copy(ip_mat * in){
 ip_mat * ip_mat_subset(ip_mat * t, unsigned int row_start, unsigned int row_end, unsigned int col_start, unsigned int col_end){
     int i,j,z;
     ip_mat *out;
-    out = ip_mat_create(col_end-col_start,row_end-row_start,t->k,0);
+    out = ip_mat_create(row_end-row_start,col_end-col_start,t->k,0);
     
     for(i=0;i<t->k;i++){
         for(j=col_start;j<col_end;j++){
             for(z=row_start;z<row_end;z++){
-                set_val(out,j-col_start,z-row_start,i,get_val(t,j,z,i)); /*devo ridurre l'input in set val*/
+                set_val(out,z-row_start,j-col_start,i,get_val(t,z,j,i)); /*devo ridurre l'input in set val*/
             }
         }
     }
@@ -620,10 +620,11 @@ ip_mat * ip_mat_brighten(ip_mat * a, float bright){
  * */
 ip_mat * ip_mat_corrupt(ip_mat * a, float amount){
     ip_mat *out,*tmp;
-    out = ip_mat_create(a->h,a->w,a->k,0);
-    ip_mat_init_random(out,0,0.25);
-    tmp=ip_mat_mul_scalar(out,amount);
+    tmp = ip_mat_create(a->h,a->w,a->k,0);
+    
+    ip_mat_init_random(tmp,0,amount/2.0);
     out=ip_mat_sum(a,tmp);
+    
     free(tmp);
     return out;
 }
@@ -646,7 +647,7 @@ ip_mat * ip_mat_convolve(ip_mat * a, ip_mat * f){
         for(r=0;r<=new_a->w-f->w;r++){
             int ii,ic,ir;
             ip_mat *sub_new_a;
-            sub_new_a = ip_mat_subset(new_a, r, r+f->w, c, c+f->h);
+            sub_new_a = ip_mat_subset(new_a, c, c+f->h, r, r+f->w);
             
             for(ii=0;ii<sub_new_a->k;ii++){
                 float tot = 0.0;
@@ -654,7 +655,7 @@ ip_mat * ip_mat_convolve(ip_mat * a, ip_mat * f){
                     for(ir=0;ir<sub_new_a->h;ir++){
                         float t1, t2;
                         t1 = get_val(sub_new_a,ic,ir,ii);
-                        t2 = get_val(f,ic,ir,0); /* 0 perche il filtro ha sempre solo una dimensione */
+                        t2 = get_val(f,ic,ir,ii);
                         tot += t1*t2;
                     }
                 }
@@ -696,69 +697,57 @@ ip_mat * ip_mat_padding(ip_mat * a, unsigned int pad_h, unsigned int pad_w){
     return out;
 }
 
-/* Crea un filtro di sharpening */
-ip_mat * create_sharpen_filter(){
+/* The input is a 2d matrix containing all the values of the filter */
+ip_mat * create_filter_from_data(float filter[3][3]){
+    int k,c,r;
+    unsigned int cols,rows;
     ip_mat *out;
-    out = ip_mat_create(3,3,1,0);
-    set_val(out,0,0,0,0);
-    set_val(out,0,1,0,-1);
-    set_val(out,0,2,0,0);
-    set_val(out,1,0,0,-1);
-    set_val(out,1,1,0,5);
-    set_val(out,1,2,0,-1);
-    set_val(out,2,0,0,0);
-    set_val(out,2,1,0,-1);
-    set_val(out,2,2,0,0);
-    return out;
-}    
-
-/* Crea un filtro per rilevare i bordi */
-ip_mat * create_edge_filter(){
-    ip_mat *out;
-    out = ip_mat_create(3,3,1,0);
-    set_val(out,0,0,0,-1);
-    set_val(out,0,1,0,-1);
-    set_val(out,0,2,0,-1);
-    set_val(out,1,0,0,-1);
-    set_val(out,1,1,0,8);
-    set_val(out,1,2,0,-1);
-    set_val(out,2,0,0,-1);
-    set_val(out,2,1,0,-1);
-    set_val(out,2,2,0,-1);
-    return out;
-} 
-
-/* Crea un filtro per aggiungere profondità */
-ip_mat * create_emboss_filter(){
-    ip_mat *out;
-    out = ip_mat_create(3,3,1,0);
-    set_val(out,0,0,0,-2);
-    set_val(out,0,1,0,-1);
-    set_val(out,0,2,0,0);
-    set_val(out,1,0,0,-1);
-    set_val(out,1,1,0,1);
-    set_val(out,1,2,0,1);
-    set_val(out,2,0,0,0);
-    set_val(out,2,1,0,1);
-    set_val(out,2,2,0,2);
-    return out;
-} 
-
-/* Crea un filtro medio per la rimozione del rumore */
-ip_mat * create_average_filter(unsigned int h, unsigned int w, unsigned int k){
-    int i,j,z;
-    float c=1./(w*h);
-    ip_mat *out;
-    out = ip_mat_create(h,w,k,0);
+    cols = rows = 3;
+    out = ip_mat_create(rows,cols,3,0);
     
-    for(i=0;i<out->k;i++){
-        for(j=0;j<out->h;j++){
-            for(z=0;z<out->w;z++){
-                   set_val(out,j,z,i,c); 
+    for(k=0;k<3;k++){
+        for(c=0;c<cols;c++){
+            for(r=0;r<rows;r++){
+                set_val(out, c, r, k, filter[c][r]);
             }
         }
     }
+    
     return out;
+}
+
+/* Crea un filtro di sharpening */
+ip_mat * create_sharpen_filter(){
+    float filter[3][3] = {{0, -1, 0},{-1, 5, -1},{0, -1, 0}};
+    
+    return create_filter_from_data(filter);
+}
+
+/* Crea un filtro per rilevare i bordi */
+ip_mat * create_edge_filter(){
+    float filter[3][3] = {{-1, -1, -1},{-1, 8, -1},{-1, -1, -1}};
+    
+    return create_filter_from_data(filter);
+}
+
+/* Crea un filtro per aggiungere profondità */
+ip_mat * create_emboss_filter(){
+    float filter[3][3] = {{-2, -1, 0},{-1, 1, 1},{0, 1, 2}};
+    
+    return create_filter_from_data(filter);
+}
+
+/* Crea un filtro medio per la rimozione del rumore */
+ip_mat * create_average_filter(unsigned int h, unsigned int w, unsigned int k){
+    int i,j;
+    float filter[3][3];
+    float c=1./(w*h);
+    for(i=0;i<3;i++)
+        for(j=0;j<3;j++)
+            filter[i][j] = c;
+    
+    return create_filter_from_data(filter);
+    
 }
 
 /* Crea un filtro gaussiano per la rimozione del rumore */

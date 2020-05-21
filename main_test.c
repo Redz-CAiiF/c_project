@@ -19,215 +19,8 @@ void print_ip_mat(ip_mat *b){
 }
 
 
-void test_fun(){
-    ip_mat *p,*b,*d, *f;
-    
-    
-    p = ip_mat_create(5,4,3,5);
-    
-    printf("\n%d %d %d\n",p->w,p->h,p->k);
-    printf("%f\n",p->data[0][0][0]);
-    printf("%f\n",p->stat[0].min);
-    
-    printf("get_val: %f\n",get_val(p,0,0,0));
-    set_val(p,0,0,0,4);
-    printf("get_val after set: %f\n",get_val(p,0,0,0));
-    
-    print_ip_mat(p);
-    
-    
-    b = ip_mat_copy(p);
-    
-    printf("get_val in copy: %f\n",get_val(b,0,0,0));
-    
-    ip_mat_free(b);
-    
-    b = ip_mat_subset(p,1,3,1,2);
-    
-    print_ip_mat(b);
-    
-    ip_mat_free(b);
-    ip_mat_free(p);
-    
-    p = ip_mat_create(5,4,3,5);
-    b = ip_mat_create(5,4,3,3);
-    
-    printf("SUM:\n");
-    d = ip_mat_sum(p,b);
-    print_ip_mat(d);
-    
-    ip_mat_free(d);
-    
-    printf("SUB:\n");
-    d = ip_mat_sub(p,b);
-    print_ip_mat(d);
-    
-    ip_mat_free(d);
-    
-    printf("MUL S:\n");
-    d = ip_mat_mul_scalar(p,5);
-    print_ip_mat(d);
-    
-    ip_mat_free(d);
-    
-    printf("ADD S:\n");
-    d = ip_mat_add_scalar(p,-5);
-    print_ip_mat(d);
-    
-    
-    
-    ip_mat_free(d);
-    
-    printf("GRAY SCALE:\n");
-    d = ip_mat_to_gray_scale(p);
-    print_ip_mat(d);
-    
-    ip_mat_free(d);
-    
-    printf("STATS:\n");
-    compute_stats(p);
-    ip_mat_show_stats(p);
-    
-    printf("MEDIA MATRICI:\n");
-    d = ip_mat_mean(p, b);
-    print_ip_mat(d);
-    
-    ip_mat_free(d);
-    
-    d = ip_mat_create(3,3,3,0);
-    
-    printf("INIT RANDOM:\n");
-    ip_mat_init_random(d, 3.5, 35);
-    print_ip_mat(d);
-    
-    
-    ip_mat_free(b);
-    ip_mat_free(p);
-    ip_mat_free(d);
-    
-    p = ip_mat_create(5,4,1,5);
-    b = ip_mat_create(5,4,1,3);
-    
-    printf("CONCAT:\n");
-    d = ip_mat_concat(p,b,0);
-    
-    set_val(p,2,2,0,10.);
-    
-    print_ip_mat(d);
-    print_ip_mat(p);
-    
-    
-    ip_mat_free(b);
-    ip_mat_free(p);
-    ip_mat_free(d);
-    
-    
-    
-    
-    
-    
-    
-    
-    p = ip_mat_create(5,5,1,0);
-    b = ip_mat_create(3,3,1,0);
-    
-    set_val(p,0,0,0,7);
-    set_val(p,0,1,0,2);
-    set_val(p,0,2,0,3);
-    set_val(p,0,3,0,3);
-    set_val(p,0,4,0,8);
-    
-    set_val(p,1,0,0,4);
-    set_val(p,1,1,0,5);
-    set_val(p,1,2,0,3);
-    set_val(p,1,3,0,8);
-    set_val(p,1,4,0,4);
-    
-    set_val(p,2,0,0,3);
-    set_val(p,2,1,0,3);
-    set_val(p,2,2,0,2);
-    set_val(p,2,3,0,8);
-    set_val(p,2,4,0,4);
-    
-    set_val(p,3,0,0,2);
-    set_val(p,3,1,0,8);
-    set_val(p,3,2,0,7);
-    set_val(p,3,3,0,2);
-    set_val(p,3,4,0,7);
-    
-    set_val(p,4,0,0,5);
-    set_val(p,4,1,0,4);
-    set_val(p,4,2,0,4);
-    set_val(p,4,3,0,5);
-    set_val(p,4,4,0,4);
-    
-    printf("ORIGINAL:\n");
-    print_ip_mat(p);
-    
-    
-    set_val(b,0,0,0,1);
-    set_val(b,0,1,0,0);
-    set_val(b,0,2,0,-1);
-    
-    set_val(b,1,0,0,1);
-    set_val(b,1,1,0,0);
-    set_val(b,1,2,0,-1);
-    
-    set_val(b,2,0,0,1);
-    set_val(b,2,1,0,0);
-    set_val(b,2,2,0,-1);
-    
-    printf("KERNEL:\n");
-    print_ip_mat(b);
-    
-    f = ip_mat_padding(p, 1, 1);
-    printf("PADDING:\n");
-    print_ip_mat(f);
-    
-    d = ip_mat_convolve(p,b);
-    printf("OUTPUT:\n");
-    print_ip_mat(d);
-    
-    ip_mat_free(b);
-    ip_mat_free(p);
-    ip_mat_free(d);
-    ip_mat_free(f);
-    
-    
-    p = ip_mat_create(5,5,3,5);
-    b = ip_mat_create(3,3,1,0);
-    
-    set_val(b,0,0,0,1);
-    set_val(b,0,1,0,0);
-    set_val(b,0,2,0,-1);
-    
-    set_val(b,1,0,0,1);
-    set_val(b,1,1,0,0);
-    set_val(b,1,2,0,-1);
-    
-    set_val(b,2,0,0,1);
-    set_val(b,2,1,0,0);
-    set_val(b,2,2,0,-1);
-    
-    
-    d = ip_mat_convolve(p,b);
-    printf("\n\nOUTPUT2:\n");
-    print_ip_mat(d);
-    
-    ip_mat_free(b);
-    ip_mat_free(p);
-    ip_mat_free(d);
-    ip_mat_free(f);
-    
-}
 
-
-int test2(){
-    
-}
-
-int main (int argc, char * argv[]) {
-
+void test2(){
     ip_mat *p,*b,*d;
     
     p = ip_mat_create(5,5,1,0);
@@ -330,11 +123,161 @@ int main (int argc, char * argv[]) {
     ip_mat_free(gray_temp_bit);
     ip_mat_free(ip_map_imm_p);
     ip_mat_free(ip_map_imm_p_elab);
+}
+
+int main (int argc, char * argv[]) {
+
+    ip_mat *p,*b,*d;
+    
+    /*p = ip_mat_create(5,5,1,1);
+    b = ip_mat_create(3,5,1,3);
+    
+    set_val(p,3,2,0,50);
+    
+    printf("OUTPUT 1:\n");
+    print_ip_mat(p);
+    printf("OUTPUT 2:\n");
+    print_ip_mat(b);
+    
+    compute_stats(p);
+    
+    ip_mat_show_stats(p);
+    
+    ip_mat_free(b);
+    ip_mat_free(p);
+    
+    p = ip_mat_create(5,5,1,0);
+    ip_mat_init_random(p, 50, 10);
+    printf("OUTPUT 3:\n");
+    print_ip_mat(p);
+    
+    b = ip_mat_copy(p);
+    set_val(p,3,2,0,0);
+    
+    printf("OUTPUT 4:\n");
+    print_ip_mat(p);
+    printf("OUTPUT 5:\n");
+    print_ip_mat(b);
+    
+    d = ip_mat_subset(p,1,3,2,3);
+    printf("OUTPUT 6:\n");
+    print_ip_mat(d);*/
+    
+    /*p = ip_mat_create(5,5,2,1);
+    b = ip_mat_create(5,2,2,3);
+    
+    d = ip_mat_concat(p,b,1);
+    
+    printf("OUTPUT 7:\n");
+    print_ip_mat(d);*/
+    
+    
+    /*p = ip_mat_create(5,5,1,1);
+    b = ip_mat_create(5,5,1,3);
+    
+    d = ip_mat_sum(p,b);
+    
+    printf("OUTPUT 8:\n");
+    print_ip_mat(d);
+    
+    d = ip_mat_sub(p,b);
+    
+    printf("OUTPUT 9:\n");
+    print_ip_mat(d);
+    
+    d = ip_mat_mul_scalar(p,10);
+    
+    printf("OUTPUT 10:\n");
+    print_ip_mat(d);
+    
+    d = ip_mat_add_scalar(p,9);
+    
+    printf("OUTPUT 11:\n");
+    print_ip_mat(d);
+    
+    d = ip_mat_mean(p,b);
+    
+    printf("OUTPUT 12:\n");
+    print_ip_mat(d);*/
+    
+    
+    
+    Bitmap *imagine_input1,*imagine_input2, *imagine_output;
+    ip_mat *ii_c1, *ii_c2, *output;
+    
+    /*imagine_input1 = bm_load("flower.bmp");
+    ii_c1 = bitmap_to_ip_mat(imagine_input1);
+    
+    output = ip_mat_brighten(ii_c1,50);
+    
+    imagine_output = ip_mat_to_bitmap(output);
+    bm_save(imagine_output,"filter_test_br.bmp");*/
+    
+    
+    /*imagine_input1 = bm_load("flower2.bmp");
+    imagine_input2 = bm_load("mongolfiere.bmp");
+    ii_c1 = bitmap_to_ip_mat(imagine_input1);
+    ii_c2 = bitmap_to_ip_mat(imagine_input2);
+    
+    output = ip_mat_blend(ii_c1,ii_c2,.5);
+    
+    imagine_output = ip_mat_to_bitmap(output);
+    bm_save(imagine_output,"filter_test_blend.bmp");*/
+    
+    
+    /*imagine_input1 = bm_load("flower2.bmp");
+    ii_c1 = bitmap_to_ip_mat(imagine_input1);
+    
+    output = ip_mat_corrupt(ii_c1,100);
+    clamp(output, 0, 255);
+    
+    imagine_output = ip_mat_to_bitmap(output);
+    bm_save(imagine_output,"filter_test_corrupt.bmp");*/
+    
+
+    /*imagine_input1 = bm_load("flower2.bmp");
+    ii_c1 = bitmap_to_ip_mat(imagine_input1);
+    
+    output = ip_mat_brighten(ii_c1,50);
+    output = ip_mat_padding(output, 40,40);
+    clamp(output, 0, 255);
+    
+    imagine_output = ip_mat_to_bitmap(output);
+    bm_save(imagine_output,"filter_test_bi_padding.bmp");*/
+    
+    
+    /*p = create_sharpen_filter();
+    printf("OUTPUT 13:\n");
+    print_ip_mat(p);
+    p = create_edge_filter();
+    printf("OUTPUT 14:\n");
+    print_ip_mat(p);
+    p = create_emboss_filter();
+    printf("OUTPUT 15:\n");
+    print_ip_mat(p);
+    p = create_average_filter(3,3,3);
+    printf("OUTPUT 16:\n");
+    print_ip_mat(p);*/
+    p = create_gaussian_filter(3,3,3,.10);
+    printf("OUTPUT 17:\n");
+    print_ip_mat(p);
+    
+    
+    /*imagine_input1 = bm_load("flower.bmp");
+    ii_c1 = bitmap_to_ip_mat(imagine_input1);
+    
+    output = ip_mat_convolve(ii_c1,create_edge_filter());
+    clamp(output, 0, 255);
+    
+    imagine_output = ip_mat_to_bitmap(output);
+    bm_save(imagine_output,"adv_filter_test.bmp");*/
+    
     
     return 0;
 }
 
-
+/*rescale(ip_map_imm_p_elab,255);*/
+/*clamp(output, 0, 255);*/
 
 
 
