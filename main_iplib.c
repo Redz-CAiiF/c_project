@@ -40,7 +40,7 @@ int main (int argc, char * argv[]) {
     ip_mat * img= NULL, * img_b= NULL;
     ip_mat * temp = NULL;
 
-    if(argc==1){
+    /*if(argc==1){
         show_help();
         return 0;
     }
@@ -49,13 +49,13 @@ int main (int argc, char * argv[]) {
         printf("Non sono stati forniti i parametri obbligatori!\n");
         return 0;
     }
-
-    fn_in_1 = argv[1];  /* file 1 */
-    fn_in_2 = argv[2];  /* file 2 */
-    operation = argv[3]; /* operazione da eseguire */
-    fn_out = argv[4]; /* output file */
-
-    if(argc>5) {
+*/
+    fn_in_1 = "flower2.bmp";  /* file 1 */
+    fn_in_2 = "mongolfiere.bmp";  /* file 2 */
+    operation = "corrupt"; /* operazione da eseguire */
+    fn_out = "out.bmp"; /* output file */
+   /*
+   if(argc>5) {
         concat_images = atoi(argv[5]);
     }
 
@@ -66,7 +66,7 @@ int main (int argc, char * argv[]) {
     if(argc>7){
         sigma = atof(argv[7]);
     }
-
+*/
     b = bm_load(fn_in_1);  /* leggi il file di input */
 
     input_img = bitmap_to_ip_mat(b); /* converti la bitmap in un ip_mat */
@@ -74,17 +74,17 @@ int main (int argc, char * argv[]) {
     bm_free(b); /* libera la memoria dalla bitmap, da qui in poi lavoriamo con ip_mat */
 
     if (strcmp(operation, "corrupt") == 0) {
-        img = ip_mat_corrupt(input_img, k_size);  /* corrompi l'immagine con del rumore */
+        img = ip_mat_corrupt(input_img, 100);  /* corrompi l'immagine con del rumore */
     }
     else if (strcmp(operation, "brighten") == 0) {
-        img = ip_mat_brighten(input_img, k_size); /* aumenta la luminosità */
+        img = ip_mat_brighten(input_img,100); /* aumenta la luminosità */
         clamp(img,0,255); /* effettua il clamping dei valori in 0-255 */
     }
     else if (strcmp(operation, "blend") == 0) {
         Bitmap * c = bm_load(fn_in_2);
         ip_mat * img_b = bitmap_to_ip_mat(c);
 
-        img = ip_mat_blend(input_img, img_b, sigma); /* effettua il blending di due immagini */
+        img = ip_mat_blend(input_img, img_b, 1.0); /* effettua il blending di due immagini */
 
         ip_mat_free(img_b);
         bm_free(c);
@@ -108,7 +108,7 @@ int main (int argc, char * argv[]) {
         filter = create_average_filter(k_size, k_size, 3);
         img = ip_mat_convolve(input_img, filter);
     } else if (strcmp(operation, "gauss") == 0) {
-        filter = create_gaussian_filter(k_size, k_size, 3, sigma);
+        filter = create_gaussian_filter(k_size, k_size, 3, 2.0);
         img = ip_mat_convolve(input_img, filter);
         clamp(img,0,255);
     } else {

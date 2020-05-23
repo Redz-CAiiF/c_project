@@ -158,21 +158,22 @@ int main (int argc, char * argv[]) {
     print_ip_mat(p);
     
     
-    /*imagine_input1 = bm_load("flower.bmp");
+    imagine_input1 = bm_load("flower.bmp");
     ii_c1 = bitmap_to_ip_mat(imagine_input1);
     
-    output = ip_mat_convolve(ii_c1,create_edge_filter());
+    output = ip_mat_corrupt(ii_c1,100);
     clamp(output, 0, 255);
     
     imagine_output = ip_mat_to_bitmap(output);
-    bm_save(imagine_output,"adv_filter_test.bmp");*/
+    bm_save(imagine_output,"adv_filter_test.bmp");
+    
+    /*rescale(ip_map_imm_p_elab,255);*/
     
     
     return 0;
 }
 
-/*rescale(ip_map_imm_p_elab,255);*/
-/*clamp(output, 0, 255);*/
+
 
 
 
