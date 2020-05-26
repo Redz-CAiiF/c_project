@@ -66,7 +66,6 @@ int main (int argc, char * argv[]) {
     if(argc>7){
         sigma = atof(argv[7]);
     }
-    printf("ciao 1 \n");
     b = bm_load(fn_in_1);  /* leggi il file di input */
 
     input_img = bitmap_to_ip_mat(b); /* converti la bitmap in un ip_mat */
@@ -74,7 +73,7 @@ int main (int argc, char * argv[]) {
     bm_free(b); /* libera la memoria dalla bitmap, da qui in poi lavoriamo con ip_mat */
 
     if (strcmp(operation, "corrupt") == 0) {
-        printf("ciao 2 \n");
+
         img = ip_mat_corrupt(input_img, k_size);  /* corrompi l'immagine con del rumore */
         clamp(img,0,255); /* effettua il clamping dei valori in 0-255 */
     }
@@ -117,7 +116,6 @@ int main (int argc, char * argv[]) {
         printf("The required operation doesn't exists\n");
         exit(1);
     }
-    printf("ciao 3 \n");
     if(concat_images) {
         if(strcmp(operation, "blend") == 0){
             c = bm_load(fn_in_2);
@@ -136,14 +134,10 @@ int main (int argc, char * argv[]) {
     }
 
     ip_mat_free(input_img); /* libera la memoria dalla ip_mat contenente l'immagine di input */
-
     b2 = ip_mat_to_bitmap(img); /* converti l'immagine di output in una bitmap */
-    printf("ciao 4 \n");
     ip_mat_free(img); /* libera la memoria da img */
     ip_mat_free(filter); /* libera la memoria dal filtro */
-    printf("ciao 5 \n");
     bm_save(b2, fn_out); /* salva la bitmap di output su file */
     bm_free(b2); /* libera la memoria dalla bitmap */
-    printf("ciao 6 \n");
     return 0; /* ciao a tutti!*/
 }
