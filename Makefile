@@ -21,8 +21,10 @@ bmp.o: bmp.c bmp.h
 	gcc bmp.c -o bmp.o -Wall -c
 
 clean:
-	rm bmp.o
-	rm test.o
-	rm ip_lib.o
-	rm main
-	rm test
+	rm -f bmp.o
+	rm -f test.o
+	rm -f ip_lib.o
+	rm -f main
+	rm -f main_test.o
+	rm -f test
+	rm -f tfun

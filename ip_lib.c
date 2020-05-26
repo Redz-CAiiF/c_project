@@ -161,7 +161,7 @@ float get_normal_random(float media, float std){
  * Inoltre crea un vettore di stats per contenere le statische sui singoli canali.
  * */
 ip_mat * ip_mat_create(unsigned int h, unsigned int w,unsigned  int k, float v){
-    int i,j,z;
+    unsigned int i,j,z;
 	ip_mat *pic; /*indici di scorrimento canali, colonne, righe*/ 
     pic = (ip_mat *) malloc(sizeof(struct ip_mat)); /*creo la nuova matrice*/
     
@@ -196,7 +196,7 @@ ip_mat * ip_mat_create(unsigned int h, unsigned int w,unsigned  int k, float v){
  *
  * */
 void ip_mat_free(ip_mat *a){
-    int i,j;
+    unsigned int i,j;
     if (a!=NULL){
      /* free stats */
     free(a->stat);
@@ -234,7 +234,7 @@ void compute_stats(ip_mat * t){
         
         inserisco i dati in stats di i
     */
-    int i,j,z;
+    unsigned int i,j,z;
     
     for(i=0;i<t->k;i++){
         float tot, count, max, min;
@@ -262,7 +262,7 @@ void compute_stats(ip_mat * t){
 /* Inizializza una ip_mat con dimensioni w h e k.
  * Ogni elemento è generato da una gaussiana con media mean e deviazione std */
 void ip_mat_init_random(ip_mat * t, float mean, float std){
-    int i,j,z;
+    unsigned int i,j,z;
     compute_stats(t);
     
     for(i=0;i<t->k;i++){
@@ -278,7 +278,7 @@ void ip_mat_init_random(ip_mat * t, float mean, float std){
 
 /* Crea una copia di una ip_mat e lo restituisce in output */
 ip_mat * ip_mat_copy(ip_mat * in){
-    int i,j,z;
+    unsigned int i,j,z;
 	ip_mat *out;
     out = ip_mat_create(in->h,in->w,in->k,0);
     
@@ -312,7 +312,7 @@ ip_mat * ip_mat_copy(ip_mat * in){
 /* devo sapere se row_end e col_end sono inclusi oppure no
  * */
 ip_mat * ip_mat_subset(ip_mat * t, unsigned int row_start, unsigned int row_end, unsigned int col_start, unsigned int col_end){
-    int i,j,z;
+    unsigned int i,j,z;
     ip_mat *out;
     out = ip_mat_create(row_end-row_start,col_end-col_start,t->k,0);
     
@@ -354,7 +354,7 @@ ip_mat * ip_mat_concat(ip_mat * a, ip_mat * b, int dimensione){
     switch (dimensione){
         case 0: 
         if(a->w == b->w && a->k == b->k){
-            int i,j,z;
+            unsigned int i,j,z;
             ip_mat *out;
             out = ip_mat_create(a->h+b->h,a->w,a->k,0);
             for(i=0;i<a->k;i++){
@@ -382,7 +382,7 @@ ip_mat * ip_mat_concat(ip_mat * a, ip_mat * b, int dimensione){
         break;
         case 1:
         if(a->h == b->h && a->k == b->k){
-            int i,j,z;
+            unsigned int i,j,z;
             ip_mat *out;
             out = ip_mat_create(a->h,a->w+b->w,a->k,0);
             for(i=0;i<a->k;i++){
@@ -407,7 +407,7 @@ ip_mat * ip_mat_concat(ip_mat * a, ip_mat * b, int dimensione){
         break;
         case 2:
         if(a->h == b->h && a->w == b->w){
-            int i,j,z;
+            unsigned int i,j,z;
             ip_mat *out;
             out = ip_mat_create(a->h,a->w,a->k+b->k,0);
             for(i=0;i<a->k;i++){
@@ -446,7 +446,7 @@ ip_mat * ip_mat_concat(ip_mat * a, ip_mat * b, int dimensione){
  */
 ip_mat * ip_mat_sum(ip_mat * a, ip_mat * b){
     if(a->w==b->w && a->h==b->h && a->k==b->k){
-        int i,j,z;
+        unsigned int i,j,z;
         ip_mat *out;
         out = ip_mat_create(a->h,a->w,a->k,0);
         
@@ -469,7 +469,7 @@ ip_mat * ip_mat_sum(ip_mat * a, ip_mat * b){
  */
 ip_mat * ip_mat_sub(ip_mat * a, ip_mat * b){
     if(a->w==b->w && a->h==b->h && a->k==b->k){
-        int i,j,z;
+        unsigned int i,j,z;
         ip_mat *out;
         out = ip_mat_create(a->h,a->w,a->k,0);
         
@@ -492,7 +492,7 @@ ip_mat * ip_mat_sub(ip_mat * a, ip_mat * b){
  * all'interno di una nuova ip_mat.
  */
 ip_mat * ip_mat_mul_scalar(ip_mat *a, float c){
-    int i,j,z;
+    unsigned int i,j,z;
     ip_mat *out;
     out = ip_mat_create(a->h,a->w,a->k,0);
     
@@ -509,7 +509,7 @@ ip_mat * ip_mat_mul_scalar(ip_mat *a, float c){
  * all'interno di una nuova ip_mat.
  */
 ip_mat * ip_mat_add_scalar(ip_mat *a, float c){
-    int i,j,z;
+    unsigned int i,j,z;
     ip_mat *out;
     out = ip_mat_create(a->h,a->w,a->k,0);
     
@@ -530,7 +530,7 @@ ip_mat * ip_mat_add_scalar(ip_mat *a, float c){
 /* NON SONO SICURO SU QUESTA */
 ip_mat * ip_mat_mean(ip_mat * a, ip_mat * b){
     /* ogni elem è la media tra a e b */
-    int i,j,z;
+    unsigned int i,j,z;
     ip_mat *out;
     out = ip_mat_create(a->h,a->w,a->k,0);
     
@@ -553,7 +553,7 @@ ip_mat * ip_mat_mean(ip_mat * a, ip_mat * b){
  * all'interno di una nuova ip_mat.
  * */
 ip_mat * ip_mat_to_gray_scale(ip_mat * in){
-    int i,j,z;
+    unsigned int i,j,z;
     ip_mat *out;
     out = ip_mat_create(in->h,in->w,in->k,0);
     
@@ -581,7 +581,7 @@ ip_mat * ip_mat_to_gray_scale(ip_mat * in){
  */
 ip_mat * ip_mat_blend(ip_mat * a, ip_mat * b, float alpha){
     if(alpha>=0.0 && alpha<=1.0 && a->w==b->w && a->h==b->h && a->k==b->k){
-        int i,j,z;
+        unsigned int i,j,z;
         ip_mat *out;
         out = ip_mat_create(a->h,a->w,a->k,0);
         
@@ -640,14 +640,14 @@ ip_mat * ip_mat_corrupt(ip_mat * a, float amount){
  * all'interno di una nuova ip_mat.
  */
 ip_mat * ip_mat_convolve(ip_mat * a, ip_mat * f){
-    int c,r;
+    unsigned int c,r;
     ip_mat *out, *new_a;
     out = ip_mat_create(a->h,a->w,a->k,0);
     new_a = ip_mat_padding(a,(f->h-1)/2,(f->w-1)/2);
     
     for(c=0;c<=new_a->h-f->h;c++){
         for(r=0;r<=new_a->w-f->w;r++){
-            int ii,ic,ir;
+            unsigned int ii,ic,ir;
             ip_mat *sub_new_a;
             sub_new_a = ip_mat_subset(new_a, c, c+f->h, r, r+f->w);
             
@@ -685,7 +685,7 @@ ip_mat * ip_mat_convolve(ip_mat * a, ip_mat * f){
  * all'interno di una nuova ip_mat.
  */
 ip_mat * ip_mat_padding(ip_mat * a, unsigned int pad_h, unsigned int pad_w){
-    int i,c,r;
+    unsigned int i,c,r;
     ip_mat *out;
     out = ip_mat_create(a->h+(2*pad_h),a->w+(2*pad_w),a->k,0);
     
@@ -701,7 +701,7 @@ ip_mat * ip_mat_padding(ip_mat * a, unsigned int pad_h, unsigned int pad_w){
 
 /* The input is a 2d matrix containing all the values of the filter */
 ip_mat * create_filter_from_data(float filter[3][3]){
-    int k,c,r;
+    unsigned int k,c,r;
     unsigned int cols,rows;
     ip_mat *out;
     cols = rows = 3;
@@ -741,7 +741,7 @@ ip_mat * create_emboss_filter(){
 
 /* Crea un filtro medio per la rimozione del rumore */
 ip_mat * create_average_filter(unsigned int h, unsigned int w, unsigned int k){
-    int i,j,z;
+    unsigned int i,j,z;
     ip_mat *out;
     float c=1./(w*h);
     out = ip_mat_create(h,w,k,0);
@@ -760,28 +760,28 @@ ip_mat * create_average_filter(unsigned int h, unsigned int w, unsigned int k){
 /* Crea un filtro gaussiano per la rimozione del rumore */
 ip_mat * create_gaussian_filter(unsigned int h, unsigned int w, unsigned int k, float sigma){
 
-	float somma=0;
-	int i,j,z;
+    float somma=0;
+    unsigned int i,j,z;
     ip_mat *out;
     out = ip_mat_create(h,w,k,0);
-	
-	for (i=0;i<h;i++){
-		for(j=0;j<w;j++){
-			float x= i-(h-1)/2.;
-			float y= j-(w-1)/2.;
-			float ris=1.*exp(((pow(x,2)+pow(y,2))/((2*pow(sigma,2))))*(-1));
-			somma+=ris;
+
+    for (i=0;i<h;i++){
+        for(j=0;j<w;j++){
+            float x= i-(h-1)/2.;
+            float y= j-(w-1)/2.;
+            float ris=1.*exp(((pow(x,2)+pow(y,2))/((2*pow(sigma,2))))*(-1));
+            somma+=ris;
             set_val(out,i,j,0,ris);  
-		}
-	}
-	for (i=0;i<h;i++){
-		for(j=0;j<w;j++){
+        }
+    }
+    for (i=0;i<h;i++){
+        for(j=0;j<w;j++){
             float ris=get_val(out,i,j,0)/somma;
             for(z=0;z<k;z++){
                 set_val(out,i,j,z,ris);  
             }    
-		}
-	}
+        }
+    }
 
     return out;
 }
@@ -799,7 +799,7 @@ ip_mat * create_gaussian_filter(unsigned int h, unsigned int w, unsigned int k, 
  * Il risultato dell'operazione si salva in t
  * */
 void rescale(ip_mat * t, float new_max){
-    int i,j,z;
+    unsigned int i,j,z;
     compute_stats(t);
     for(i=0;i<t->k;i++){
         for(j=0;j<t->h;j++){
@@ -817,7 +817,7 @@ void rescale(ip_mat * t, float new_max){
  * Il risultato dell'operazione si salva in t
  * */
 void clamp(ip_mat * t, float low, float high){
-    int i,j,z;
+    unsigned int i,j,z;
     for(i=0;i<t->k;i++){
         for(j=0;j<t->h;j++){
             for(z=0;z<t->w;z++){

@@ -22,7 +22,7 @@ void print_ip_mat(ip_mat *b){
 
 int main (int argc, char * argv[]) {
 
-    ip_mat *p,*b,*d;
+    /*ip_mat *p,*b,*d;*/
     
     /*p = ip_mat_create(5,5,1,1);
     b = ip_mat_create(3,5,1,3);
@@ -97,8 +97,8 @@ int main (int argc, char * argv[]) {
     
     
     
-    Bitmap *imagine_input1,*imagine_input2, *imagine_output;
-    ip_mat *ii_c1, *ii_c2, *output;
+    /*Bitmap *imagine_input1,*imagine_input2, *imagine_output;
+    ip_mat *ii_c1, *ii_c2, *output;*/
     
     /*imagine_input1 = bm_load("flower.bmp");
     ii_c1 = bitmap_to_ip_mat(imagine_input1);
@@ -153,7 +153,7 @@ int main (int argc, char * argv[]) {
     p = create_average_filter(3,3,3);
     printf("OUTPUT 16:\n");
     print_ip_mat(p);*/
-    p = create_gaussian_filter(5,5,1,1.);
+    /*p = create_gaussian_filter(5,5,1,1.);
     printf("OUTPUT 17:\n");
     print_ip_mat(p);
     
@@ -165,7 +165,7 @@ int main (int argc, char * argv[]) {
     clamp(output, 0, 255);
     
     imagine_output = ip_mat_to_bitmap(output);
-    bm_save(imagine_output,"adv_filter_test.bmp");
+    bm_save(imagine_output,"adv_filter_test.bmp");*/
     
     /*rescale(ip_map_imm_p_elab,255);*/
     
