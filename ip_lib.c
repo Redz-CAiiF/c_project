@@ -197,8 +197,8 @@ ip_mat * ip_mat_create(unsigned int h, unsigned int w,unsigned  int k, float v){
  * */
 void ip_mat_free(ip_mat *a){
     int i,j;
-    
-    /* free stats */
+    if (a!=NULL){
+     /* free stats */
     free(a->stat);
     
     /* free data */
@@ -211,7 +211,9 @@ void ip_mat_free(ip_mat *a){
     free(a->data);
     
     free(a);
-    
+        
+    }
+   
 }
 
 
@@ -739,14 +741,19 @@ ip_mat * create_emboss_filter(){
 
 /* Crea un filtro medio per la rimozione del rumore */
 ip_mat * create_average_filter(unsigned int h, unsigned int w, unsigned int k){
-    int i,j;
-    float filter[3][3];
+    int i,j,z;
+    ip_mat *out;
     float c=1./(w*h);
-    for(i=0;i<3;i++)
-        for(j=0;j<3;j++)
-            filter[i][j] = c;
-    
-    return create_filter_from_data(filter);
+    out = ip_mat_create(h,w,k,0);
+    for(z=0;z<k;z++){
+        for(i=0;i<h;i++){
+            for(j=0;j<w;j++){
+                set_val(out,i,j,z,c);
+            }
+                
+        }      
+    }
+    return out;
     
 }
 
