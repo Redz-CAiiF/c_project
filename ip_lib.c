@@ -627,7 +627,7 @@ ip_mat * ip_mat_corrupt(ip_mat * a, float amount){
     ip_mat_init_random(tmp,0,amount/2.0);
     out=ip_mat_sum(a,tmp);
     
-    free(tmp);
+    ip_mat_free(tmp);
     return out;
 }
 
