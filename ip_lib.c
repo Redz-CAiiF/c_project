@@ -1,6 +1,6 @@
 /*
- Created by !Sebastiano Vascon on 23/03/20.
-*/
+ * 19 Alice Bertazzon 869292	Matteo Libralesso 881297	Filippo Vladimir Scapin 879809
+ */
 
 #include <stdio.h>
 #include <math.h>

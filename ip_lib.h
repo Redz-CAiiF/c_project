@@ -1,8 +1,6 @@
 /*
- Laboratorio di programmazione A.A. 2019/2020
-
- Sebastiano Vascon
-*/
+ * 19 Alice Bertazzon 869292	Matteo Libralesso 881297	Filippo Vladimir Scapin 879809
+ */
 
 #ifndef IP_LIB_H
 #define IP_LIB_H
