@@ -96,7 +96,7 @@ Bitmap * ip_mat_to_bitmap(ip_mat * t){
 
 /* altezza|cols larghezza|rows canali */
 float get_val(ip_mat * a, unsigned int i,unsigned int j,unsigned int k){
-    if(i<a->h && j<a->w &&k<a->k){  /* j>=0 and k>=0 and i>=0 is non sense*/
+    if(i<a->h && j<a->w &&k<a->k){
         return a->data[k][i][j];
     }else{
         printf("Errore get_val!!!\n");
@@ -115,27 +115,6 @@ void set_val(ip_mat * a, unsigned int i,unsigned int j,unsigned int k, float v){
 }
 
 
-/*
-* Restituisce il valore in posizione i,j,k *
-float get_val(ip_mat * a, unsigned int i,unsigned int j,unsigned int k){
-    if(i<a->h && j<a->w &&k<a->k){
-        return a->data[i][j][k];
-    }else{
-        printf("Errore get_val!!!");
-        exit(1);
-    }
-}
-
-* Setta il valore in posizione i,j,k a v *
-void set_val(ip_mat * a, unsigned int i,unsigned int j,unsigned int k, float v){
-    if(i<a->h && j<a->w &&k<a->k){
-        a->data[i][j][k]=v;
-    }else{
-        printf("Errore set_val!!!");
-        exit(1);
-    }
-}*/
-
 float get_normal_random(float media, float std){
 
     float y1 = ( (float)(rand()) + 1. )/( (float)(RAND_MAX) + 1. );
@@ -149,20 +128,14 @@ float get_normal_random(float media, float std){
 
 
 
-
-
-
-
-
-
 /**** PARTE 1: TIPO DI DATI ip_mat E MEMORIA ****/
 
 /* Inizializza una ip_mat con dimensioni h w e k. Ogni elemento è inizializzato a v.
  * Inoltre crea un vettore di stats per contenere le statische sui singoli canali.
  * */
 ip_mat * ip_mat_create(unsigned int h, unsigned int w,unsigned  int k, float v){
-    unsigned int i,j,z;
-	ip_mat *pic; /*indici di scorrimento canali, colonne, righe*/ 
+    unsigned int i,j,z; /*indici di scorrimento canali, colonne, righe*/
+	ip_mat *pic;
     pic = (ip_mat *) malloc(sizeof(struct ip_mat)); /*creo la nuova matrice*/
     
     pic->w = w;/*righe*/
@@ -198,19 +171,19 @@ ip_mat * ip_mat_create(unsigned int h, unsigned int w,unsigned  int k, float v){
 void ip_mat_free(ip_mat *a){
     unsigned int i,j;
     if (a!=NULL){
-     /* free stats */
-    free(a->stat);
-    
-    /* free data */
-    for(i=0;i<a->k;i++){
-        for(j=0;j<a->h;j++){
-            free(a->data[i][j]);
+        /* free stats */
+        free(a->stat);
+        
+        /* free data */
+        for(i=0;i<a->k;i++){
+            for(j=0;j<a->h;j++){
+                free(a->data[i][j]);
+            }
+            free(a->data[i]);
         }
-        free(a->data[i]);
-    }
-    free(a->data);
-    
-    free(a);
+        free(a->data);
+        
+        free(a);
         
     }
    
@@ -268,7 +241,6 @@ void ip_mat_init_random(ip_mat * t, float mean, float std){
     for(i=0;i<t->k;i++){
         for(j=0;j<t->h;j++){
             for(z=0;z<t->w;z++){
-                /*float gauss = 1/(sqrt(2*PI*pow(std,2)))*exp((-pow((t->stat[i].max-mean), 2))/(2*pow(std,2)));*/
                 float gauss = get_normal_random(mean, std);
                 set_val(t,j,z,i,gauss);
             }
@@ -308,8 +280,6 @@ ip_mat * ip_mat_copy(ip_mat * in){
  *
  * I parametri della funzione non subiscono modiche, il risultato viene salvato e restituito in output
  * all'interno di una nuova ip_mat.
- * */
-/* devo sapere se row_end e col_end sono inclusi oppure no
  * */
 ip_mat * ip_mat_subset(ip_mat * t, unsigned int row_start, unsigned int row_end, unsigned int col_start, unsigned int col_end){
     unsigned int i,j,z;
@@ -527,7 +497,6 @@ ip_mat * ip_mat_add_scalar(ip_mat *a, float c){
  * I parametri della funzione non subiscono modiche, il risultato viene salvato e restituito in output
  * all'interno di una nuova ip_mat.
  */
-/* NON SONO SICURO SU QUESTA */
 ip_mat * ip_mat_mean(ip_mat * a, ip_mat * b){
     /* ogni elem è la media tra a e b */
     unsigned int i,j,z;
@@ -831,23 +800,6 @@ void clamp(ip_mat * t, float low, float high){
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
